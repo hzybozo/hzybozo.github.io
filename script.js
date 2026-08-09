@@ -1,32 +1,55 @@
 /* ========================================
-   ELEMENTS
+ELEMENTS
 ======================================== */
 
 const galleryWrapper = document.getElementById("galleryWrapper");
 const gallery = document.getElementById("gallery");
 
-const pricingButton = document.getElementById("pricingButton");
-const socialsHeroButton = document.getElementById("socialsHeroButton");
-const contactButton = document.getElementById("contactButton");
+const pricingButton =
+    document.getElementById("pricingButton");
 
-const pricingSection = document.getElementById("pricing");
-const socialsSection = document.getElementById("socials");
+const socialsHeroButton =
+    document.getElementById("socialsHeroButton");
 
-const lightbox = document.getElementById("lightbox");
-const lightboxImage = document.getElementById("lightboxImage");
-const lightboxMagnifier = document.getElementById("lightboxMagnifier");
+const contactButton =
+    document.getElementById("contactButton");
 
-const navItems = document.querySelectorAll(".nav-item");
-const sections = document.querySelectorAll("[data-section]");
-const revealSections = document.querySelectorAll(".section-reveal");
+const pricingSection =
+    document.getElementById("pricing");
 
-const cursorDot = document.querySelector(".cursor-dot");
-const cursorGlow = document.querySelector(".cursor-glow");
-const scrollProgress = document.getElementById("scrollProgress");
+const socialsSection =
+    document.getElementById("socials");
+
+const lightbox =
+    document.getElementById("lightbox");
+
+const lightboxImage =
+    document.getElementById("lightboxImage");
+
+const lightboxMagnifier =
+    document.getElementById("lightboxMagnifier");
+
+const navItems =
+    document.querySelectorAll(".nav-item");
+
+const sections =
+    document.querySelectorAll("[data-section]");
+
+const revealSections =
+    document.querySelectorAll(".section-reveal");
+
+const cursorDot =
+    document.querySelector(".cursor-dot");
+
+const cursorGlow =
+    document.querySelector(".cursor-glow");
+
+const scrollProgress =
+    document.getElementById("scrollProgress");
 
 
 /* ========================================
-   CURSOR
+CURSOR
 ======================================== */
 
 let mouseX = window.innerWidth / 2;
@@ -35,245 +58,292 @@ let mouseY = window.innerHeight / 2;
 let cursorX = mouseX;
 let cursorY = mouseY;
 
-document.addEventListener("pointermove", (event) => {
+document.addEventListener(
+    "pointermove",
+    (event) => {
 
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+        mouseX = event.clientX;
+        mouseY = event.clientY;
 
-});
+    }
+);
+
 
 function cursorLoop() {
 
-    cursorX += (mouseX - cursorX) * 0.075;
-    cursorY += (mouseY - cursorY) * 0.075;
+    cursorX +=
+        (mouseX - cursorX) * 0.075;
 
-    cursorDot.style.transform =
-        `translate3d(${cursorX - 4}px, ${cursorY - 4}px, 0)`;
+    cursorY +=
+        (mouseY - cursorY) * 0.075;
 
-    cursorGlow.style.transform =
-        `translate3d(${cursorX - 180}px, ${cursorY - 180}px, 0)`;
+
+    if (cursorDot) {
+
+        cursorDot.style.transform =
+            `translate3d(
+                ${cursorX - 4}px,
+                ${cursorY - 4}px,
+                0
+            )`;
+
+    }
+
+
+    if (cursorGlow) {
+
+        cursorGlow.style.transform =
+            `translate3d(
+                ${cursorX - 180}px,
+                ${cursorY - 180}px,
+                0
+            )`;
+
+    }
+
 
     requestAnimationFrame(cursorLoop);
+
 }
 
 cursorLoop();
 
 
 /* ========================================
-   BACKGROUND CURSOR REACTION
+BACKGROUND CURSOR REACTION
 ======================================== */
 
 let backgroundX = 0;
 let backgroundY = 0;
 
+
 function backgroundLoop() {
 
     backgroundX +=
-        ((mouseX / window.innerWidth) * 30 - backgroundX) * .035;
+        (
+            (mouseX / window.innerWidth) * 30 -
+            backgroundX
+        ) * 0.035;
+
 
     backgroundY +=
-        ((mouseY / window.innerHeight) * 30 - backgroundY) * .035;
+        (
+            (mouseY / window.innerHeight) * 30 -
+            backgroundY
+        ) * 0.035;
+
 
     document.documentElement.style.setProperty(
         "--mouse-x",
         `${backgroundX}px`
     );
 
+
     document.documentElement.style.setProperty(
         "--mouse-y",
         `${backgroundY}px`
     );
 
-    requestAnimationFrame(backgroundLoop);
+
+    requestAnimationFrame(
+        backgroundLoop
+    );
+
 }
 
 backgroundLoop();
 
 
 /* ========================================
-   SMOOTH 3D TILT
+SMOOTH 3D TILT
 ======================================== */
 
-const tiltElements = document.querySelectorAll(
-    ".tilt-frame, .gallery-item, .folder-card, .pricing-card, .tool-card, .social-card"
+const tiltElements =
+    document.querySelectorAll(
+        ".tilt-frame, .gallery-item"
+    );
+
+
+tiltElements.forEach(
+    (element) => {
+
+        let targetRotateX = 0;
+        let targetRotateY = 0;
+
+        let currentRotateX = 0;
+        let currentRotateY = 0;
+
+        let hovering = false;
+
+
+        element.addEventListener(
+            "pointerenter",
+            () => {
+
+                hovering = true;
+
+            }
+        );
+
+
+        element.addEventListener(
+            "pointermove",
+            (event) => {
+
+                if (
+                    event.target.closest("button") ||
+                    event.target.closest("a")
+                ) {
+                    return;
+                }
+
+
+                const rect =
+                    element.getBoundingClientRect();
+
+
+                const x =
+                    event.clientX -
+                    rect.left;
+
+
+                const y =
+                    event.clientY -
+                    rect.top;
+
+
+                const percentX =
+                    (x / rect.width) -
+                    0.5;
+
+
+                const percentY =
+                    (y / rect.height) -
+                    0.5;
+
+
+                targetRotateY =
+                    percentX * 5;
+
+
+                targetRotateX =
+                    percentY * -5;
+
+            }
+        );
+
+
+        element.addEventListener(
+            "pointerleave",
+            () => {
+
+                hovering = false;
+
+                targetRotateX = 0;
+                targetRotateY = 0;
+
+            }
+        );
+
+
+        function tiltLoop() {
+
+            currentRotateX +=
+                (
+                    targetRotateX -
+                    currentRotateX
+                ) * 0.075;
+
+
+            currentRotateY +=
+                (
+                    targetRotateY -
+                    currentRotateY
+                ) * 0.075;
+
+
+            if (
+                Math.abs(currentRotateX) > 0.01 ||
+                Math.abs(currentRotateY) > 0.01 ||
+                hovering
+            ) {
+
+                element.style.transform =
+                    `perspective(900px)
+                     rotateX(${currentRotateX}deg)
+                     rotateY(${currentRotateY}deg)
+                     translateY(${hovering ? -3 : 0}px)`;
+
+            } else {
+
+                element.style.transform = "";
+
+            }
+
+
+            requestAnimationFrame(
+                tiltLoop
+            );
+
+        }
+
+
+        tiltLoop();
+
+    }
 );
-
-const tiltStates = new Map();
-
-tiltElements.forEach((element) => {
-
-    tiltStates.set(element, {
-        currentX: 0,
-        currentY: 0,
-        targetX: 0,
-        targetY: 0,
-        hovering: false
-    });
-
-    element.addEventListener("pointermove", (event) => {
-
-        if (
-            event.target.closest("button") ||
-            event.target.closest("a")
-        ) {
-            return;
-        }
-
-        const state = tiltStates.get(element);
-
-        if (!state) {
-            return;
-        }
-
-        const rect =
-            element.getBoundingClientRect();
-
-        const x =
-            (event.clientX - rect.left) /
-            rect.width;
-
-        const y =
-            (event.clientY - rect.top) /
-            rect.height;
-
-        state.targetY =
-            (x - 0.5) * 7;
-
-        state.targetX =
-            (y - 0.5) * -7;
-
-        state.hovering = true;
-
-    });
-
-    element.addEventListener("pointerenter", () => {
-
-        const state = tiltStates.get(element);
-
-        if (state) {
-            state.hovering = true;
-        }
-
-    });
-
-    element.addEventListener("pointerleave", () => {
-
-        const state = tiltStates.get(element);
-
-        if (!state) {
-            return;
-        }
-
-        state.targetX = 0;
-        state.targetY = 0;
-        state.hovering = false;
-
-    });
-
-});
-
-
-function smoothTiltLoop() {
-
-    tiltStates.forEach((state, element) => {
-
-        /*
-            Smooth interpolation.
-
-            This is deliberately low so the tilt
-            follows the mouse without snapping.
-        */
-
-        state.currentX +=
-            (state.targetX - state.currentX) * 0.075;
-
-        state.currentY +=
-            (state.targetY - state.currentY) * 0.075;
-
-        const settling =
-            Math.abs(state.currentX) < 0.01 &&
-            Math.abs(state.currentY) < 0.01 &&
-            !state.hovering;
-
-        if (settling) {
-
-            state.currentX = 0;
-            state.currentY = 0;
-
-            element.style.transform = "";
-
-            return;
-        }
-
-        element.style.transform =
-            `perspective(900px)
-             rotateX(${state.currentX}deg)
-             rotateY(${state.currentY}deg)
-             translateY(${state.hovering ? -4 : 0}px)`;
-
-    });
-
-    requestAnimationFrame(smoothTiltLoop);
-}
-
-smoothTiltLoop();
 
 
 /* ========================================
-   GALLERY DUPLICATION
+GALLERY DUPLICATION
 ======================================== */
 
 const originalItems =
     Array.from(
-        gallery.querySelectorAll(".gallery-item")
+        gallery.querySelectorAll(
+            ".gallery-item"
+        )
     );
 
-originalItems.forEach((item) => {
 
-    gallery.appendChild(
-        item.cloneNode(true)
-    );
+originalItems.forEach(
+    (item) => {
 
-});
+        gallery.appendChild(
+            item.cloneNode(true)
+        );
+
+    }
+);
+
+
+/* ========================================
+GALLERY VARIABLES
+======================================== */
 
 let gallerySetWidth = 0;
+
 let galleryPosition = 0;
 
-let galleryLastTime = performance.now();
+let galleryLastTime =
+    performance.now();
+
 
 const AUTO_SPEED = 18;
 
 
 /* ========================================
-   GALLERY DRAG
+GALLERY MEASUREMENT
 ======================================== */
-
-let isDragging = false;
-let pointerId = null;
-
-let dragStartX = 0;
-let dragStartPosition = 0;
-
-let lastPointerX = 0;
-let lastPointerTime = 0;
-
-let dragVelocity = 0;
-let galleryMomentum = 0;
-
-let pressedItem = null;
-let hasDragged = false;
-
-const MOMENTUM_MULTIPLIER = 4.6;
-const MOMENTUM_FRICTION = .972;
-const MAX_MOMENTUM = 6500;
-
 
 function measureGallery() {
 
     gallerySetWidth =
         gallery.scrollWidth / 2;
 
+
     normalizeGallery();
+
     renderGallery();
 
 }
@@ -285,16 +355,25 @@ function normalizeGallery() {
         return;
     }
 
+
     while (
-        galleryPosition <= -gallerySetWidth
+        galleryPosition <=
+        -gallerySetWidth
     ) {
-        galleryPosition += gallerySetWidth;
+
+        galleryPosition +=
+            gallerySetWidth;
+
     }
+
 
     while (
         galleryPosition > 0
     ) {
-        galleryPosition -= gallerySetWidth;
+
+        galleryPosition -=
+            gallerySetWidth;
+
     }
 
 }
@@ -303,7 +382,11 @@ function normalizeGallery() {
 function renderGallery() {
 
     gallery.style.transform =
-        `translate3d(${galleryPosition}px,0,0)`;
+        `translate3d(
+            ${galleryPosition}px,
+            0,
+            0
+        )`;
 
 }
 
@@ -313,6 +396,7 @@ window.addEventListener(
     measureGallery
 );
 
+
 window.addEventListener(
     "resize",
     measureGallery
@@ -320,18 +404,22 @@ window.addEventListener(
 
 
 /* ========================================
-   GALLERY ANIMATION
+GALLERY ANIMATION
 ======================================== */
 
 function galleryLoop(currentTime) {
 
     const delta =
         Math.min(
-            currentTime - galleryLastTime,
+            currentTime -
+            galleryLastTime,
             50
         );
 
-    galleryLastTime = currentTime;
+
+    galleryLastTime =
+        currentTime;
+
 
     if (
         !isDragging &&
@@ -339,12 +427,13 @@ function galleryLoop(currentTime) {
     ) {
 
         if (
-            Math.abs(galleryMomentum) > .15
+            Math.abs(galleryMomentum) > 0.15
         ) {
 
             galleryPosition +=
                 galleryMomentum *
                 (delta / 1000);
+
 
             galleryMomentum *=
                 Math.pow(
@@ -356,6 +445,7 @@ function galleryLoop(currentTime) {
 
             galleryMomentum = 0;
 
+
             galleryPosition -=
                 AUTO_SPEED *
                 (delta / 1000);
@@ -364,17 +454,58 @@ function galleryLoop(currentTime) {
 
     }
 
+
     normalizeGallery();
+
     renderGallery();
 
-    requestAnimationFrame(galleryLoop);
+
+    requestAnimationFrame(
+        galleryLoop
+    );
+
 }
 
-requestAnimationFrame(galleryLoop);
+
+requestAnimationFrame(
+    galleryLoop
+);
 
 
 /* ========================================
-   GALLERY POINTER DOWN
+GALLERY DRAG
+======================================== */
+
+let isDragging = false;
+
+let pointerId = null;
+
+let dragStartX = 0;
+
+let dragStartPosition = 0;
+
+let lastPointerX = 0;
+
+let lastPointerTime = 0;
+
+let dragVelocity = 0;
+
+let galleryMomentum = 0;
+
+let pressedItem = null;
+
+let hasDragged = false;
+
+
+const MOMENTUM_MULTIPLIER = 4.6;
+
+const MOMENTUM_FRICTION = 0.972;
+
+const MAX_MOMENTUM = 6500;
+
+
+/* ========================================
+GALLERY POINTER DOWN
 ======================================== */
 
 galleryWrapper.addEventListener(
@@ -387,6 +518,14 @@ galleryWrapper.addEventListener(
             return;
         }
 
+
+        if (
+            lightbox.classList.contains("active")
+        ) {
+            return;
+        }
+
+
         isDragging = true;
 
         pointerId =
@@ -396,28 +535,36 @@ galleryWrapper.addEventListener(
 
         galleryMomentum = 0;
 
+
         dragStartX =
             event.clientX;
+
 
         dragStartPosition =
             galleryPosition;
 
+
         lastPointerX =
             event.clientX;
+
 
         lastPointerTime =
             performance.now();
 
+
         dragVelocity = 0;
+
 
         galleryWrapper.classList.add(
             "dragging"
         );
 
+
         pressedItem =
             event.target.closest(
                 ".gallery-item"
             );
+
 
         if (pressedItem) {
 
@@ -427,9 +574,11 @@ galleryWrapper.addEventListener(
 
         }
 
+
         galleryWrapper.setPointerCapture(
             event.pointerId
         );
+
 
         event.preventDefault();
 
@@ -438,7 +587,7 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-   GALLERY POINTER MOVE
+GALLERY POINTER MOVE
 ======================================== */
 
 galleryWrapper.addEventListener(
@@ -452,17 +601,24 @@ galleryWrapper.addEventListener(
             return;
         }
 
+
         const now =
             performance.now();
 
+
         const distance =
-            event.clientX - dragStartX;
+            event.clientX -
+            dragStartX;
+
 
         if (
             Math.abs(distance) > 7
         ) {
+
             hasDragged = true;
+
         }
+
 
         if (
             hasDragged &&
@@ -475,16 +631,25 @@ galleryWrapper.addEventListener(
 
         }
 
+
         galleryPosition =
-            dragStartPosition + distance;
+            dragStartPosition +
+            distance;
+
 
         normalizeGallery();
+
         renderGallery();
 
-        const elapsed =
-            now - lastPointerTime;
 
-        if (elapsed > 0) {
+        const elapsed =
+            now -
+            lastPointerTime;
+
+
+        if (
+            elapsed > 0
+        ) {
 
             dragVelocity =
                 (
@@ -495,8 +660,10 @@ galleryWrapper.addEventListener(
 
         }
 
+
         lastPointerX =
             event.clientX;
+
 
         lastPointerTime =
             now;
@@ -506,7 +673,7 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-   GALLERY RELEASE
+GALLERY RELEASE
 ======================================== */
 
 function releaseGallery(event) {
@@ -518,11 +685,14 @@ function releaseGallery(event) {
         return;
     }
 
+
     isDragging = false;
+
 
     galleryWrapper.classList.remove(
         "dragging"
     );
+
 
     if (
         pressedItem &&
@@ -533,15 +703,19 @@ function releaseGallery(event) {
             "pressing"
         );
 
+
         pressedItem.classList.remove(
             "clicked"
         );
 
+
         void pressedItem.offsetWidth;
+
 
         pressedItem.classList.add(
             "clicked"
         );
+
 
         openProject(
             pressedItem
@@ -549,11 +723,13 @@ function releaseGallery(event) {
 
     }
 
+
     if (hasDragged) {
 
         galleryMomentum =
             dragVelocity *
             MOMENTUM_MULTIPLIER;
+
 
         galleryMomentum =
             Math.max(
@@ -566,6 +742,7 @@ function releaseGallery(event) {
 
     }
 
+
     if (pressedItem) {
 
         pressedItem.classList.remove(
@@ -574,8 +751,11 @@ function releaseGallery(event) {
 
     }
 
+
     pressedItem = null;
+
     pointerId = null;
+
     dragVelocity = 0;
 
 }
@@ -586,6 +766,7 @@ galleryWrapper.addEventListener(
     releaseGallery
 );
 
+
 galleryWrapper.addEventListener(
     "pointercancel",
     releaseGallery
@@ -593,121 +774,13 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-   CUSTOM PAGE WHEEL
-   NO DEFAULT WINDOWS/BROWSER SCROLL
+GALLERY WHEEL
+PAGE SCROLL ONLY
 ======================================== */
 
-let wheelVelocity = 0;
-let wheelTarget = window.scrollY;
-
-let wheelAnimation = false;
-
-
-function smoothWheelScroll(delta) {
-
-    const multiplier =
-        window.innerWidth < 700
-            ? 1.05
-            : 1.15;
-
-    wheelVelocity +=
-        delta * multiplier;
-
-    wheelVelocity =
-        Math.max(
-            -2200,
-            Math.min(
-                2200,
-                wheelVelocity
-            )
-        );
-
-    wheelTarget =
-        window.scrollY +
-        wheelVelocity;
-
-    const maxScroll =
-        document.documentElement.scrollHeight -
-        window.innerHeight;
-
-    wheelTarget =
-        Math.max(
-            0,
-            Math.min(
-                maxScroll,
-                wheelTarget
-            )
-        );
-
-    if (!wheelAnimation) {
-
-        wheelAnimation = true;
-
-        requestAnimationFrame(
-            wheelLoop
-        );
-
-    }
-
-}
-
-
-function wheelLoop() {
-
-    const current =
-        window.scrollY;
-
-    const distance =
-        wheelTarget - current;
-
-    window.scrollTo(
-        0,
-        current + distance * 0.085
-    );
-
-    wheelVelocity *= 0.93;
-
-    if (
-        Math.abs(distance) > 0.35 ||
-        Math.abs(wheelVelocity) > 0.35
-    ) {
-
-        requestAnimationFrame(
-            wheelLoop
-        );
-
-    } else {
-
-        window.scrollTo(
-            0,
-            wheelTarget
-        );
-
-        wheelVelocity = 0;
-        wheelAnimation = false;
-
-    }
-
-}
-
-
-/*
-    Intercept wheel events globally.
-
-    This prevents the browser/Windows default
-    scroll behavior from fighting the custom
-    momentum system.
-*/
-
-window.addEventListener(
+galleryWrapper.addEventListener(
     "wheel",
     (event) => {
-
-        if (
-            lightbox.classList.contains("active")
-        ) {
-            return;
-        }
 
         event.preventDefault();
 
@@ -723,76 +796,224 @@ window.addEventListener(
 
 
 /* ========================================
-   LIGHTBOX
+PAGE SCROLL MOMENTUM
+======================================== */
+
+let wheelVelocity = 0;
+
+let wheelTarget =
+    window.scrollY;
+
+let wheelAnimation = false;
+
+
+function smoothWheelScroll(delta) {
+
+    const multiplier =
+        window.innerWidth < 700
+            ? 1.25
+            : 1.45;
+
+
+    wheelVelocity +=
+        delta * multiplier;
+
+
+    wheelVelocity =
+        Math.max(
+            -2200,
+            Math.min(
+                2200,
+                wheelVelocity
+            )
+        );
+
+
+    wheelTarget =
+        window.scrollY +
+        wheelVelocity;
+
+
+    const maxScroll =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
+
+
+    wheelTarget =
+        Math.max(
+            0,
+            Math.min(
+                maxScroll,
+                wheelTarget
+            )
+        );
+
+
+    if (!wheelAnimation) {
+
+        wheelAnimation = true;
+
+
+        requestAnimationFrame(
+            wheelLoop
+        );
+
+    }
+
+}
+
+
+function wheelLoop() {
+
+    const current =
+        window.scrollY;
+
+
+    const distance =
+        wheelTarget -
+        current;
+
+
+    window.scrollTo(
+        0,
+        current +
+        distance * 0.13
+    );
+
+
+    wheelVelocity *= 0.89;
+
+
+    if (
+        Math.abs(distance) > 0.5 ||
+        Math.abs(wheelVelocity) > 0.5
+    ) {
+
+        requestAnimationFrame(
+            wheelLoop
+        );
+
+    } else {
+
+        window.scrollTo(
+            0,
+            wheelTarget
+        );
+
+
+        wheelAnimation = false;
+
+        wheelVelocity = 0;
+
+    }
+
+}
+
+
+/* ========================================
+LIGHTBOX
 ======================================== */
 
 let currentProject = null;
 
+let magnifying = false;
+
 
 function openProject(item) {
 
-    currentProject = item;
+    currentProject =
+        item;
 
-    resetMagnifier();
+
+    magnifying = false;
+
+
+    lightboxMagnifier.classList.remove(
+        "active"
+    );
+
 
     lightboxImage.style.background =
-        getComputedStyle(item).background;
+        getComputedStyle(
+            item
+        ).background;
+
 
     lightboxImage.style.backgroundSize =
-        "cover";
+        "";
+
 
     lightboxImage.style.backgroundPosition =
-        "center";
+        "";
 
-    lightboxImage.style.backgroundRepeat =
-        "no-repeat";
 
     lightbox.classList.add(
         "active"
     );
 
+
     document.body.style.overflow =
         "hidden";
+
+
+    /* Prevent leftover page-wheel momentum */
+    wheelVelocity = 0;
+
+    wheelAnimation = false;
 
 }
 
 
 function closeLightbox() {
 
-    resetMagnifier();
+    magnifying = false;
+
+
+    lightboxMagnifier.classList.remove(
+        "active"
+    );
+
+
+    lightboxImage.style.backgroundSize =
+        "";
+
+
+    lightboxImage.style.backgroundPosition =
+        "";
+
+
+    lightboxImage.style.background =
+        "";
+
 
     lightbox.classList.remove(
         "active"
     );
 
-    lightboxImage.style.backgroundSize =
-        "cover";
-
-    lightboxImage.style.backgroundPosition =
-        "center";
-
-    lightboxImage.style.backgroundRepeat =
-        "no-repeat";
 
     document.body.style.overflow =
         "";
 
-    /*
-        Make sure the custom wheel system
-        starts from the actual position after
-        leaving the lightbox.
-    */
+
+    currentProject =
+        null;
+
+
+    /* Reset wheel state so page scrolling
+       cannot inherit lightbox movement */
+    wheelVelocity = 0;
 
     wheelTarget =
         window.scrollY;
 
-    wheelVelocity = 0;
     wheelAnimation = false;
-
-    currentProject = null;
 
 }
 
+
+/* ========================================
+LIGHTBOX CLOSE BY BACKGROUND CLICK
+======================================== */
 
 lightbox.addEventListener(
     "click",
@@ -801,30 +1022,8 @@ lightbox.addEventListener(
         if (
             event.target === lightbox
         ) {
+
             closeLightbox();
-        }
-
-    }
-);
-
-
-document.addEventListener(
-    "keydown",
-    (event) => {
-
-        if (
-            event.key === "Escape"
-        ) {
-
-            if (
-                lightbox.classList.contains(
-                    "active"
-                )
-            ) {
-
-                closeLightbox();
-
-            }
 
         }
 
@@ -833,51 +1032,65 @@ document.addEventListener(
 
 
 /* ========================================
-   LIGHTBOX MAGNIFIER
+ESCAPE CLOSE
 ======================================== */
 
-let magnifying = false;
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape" &&
+            lightbox.classList.contains("active")
+        ) {
+
+            closeLightbox();
+
+        }
+
+    }
+);
 
 
-function resetMagnifier() {
-
-    magnifying = false;
-
-    lightboxMagnifier.classList.remove(
-        "active"
-    );
-
-    lightboxImage.style.backgroundSize =
-        "cover";
-
-    lightboxImage.style.backgroundPosition =
-        "center";
-
-    lightboxImage.style.backgroundRepeat =
-        "no-repeat";
-
-}
-
+/* ========================================
+LIGHTBOX MAGNIFIER
+======================================== */
 
 lightboxMagnifier.addEventListener(
     "click",
-    () => {
+    (event) => {
+
+        event.stopPropagation();
+
 
         magnifying =
             !magnifying;
+
 
         lightboxMagnifier.classList.toggle(
             "active",
             magnifying
         );
 
+
         if (!magnifying) {
-            resetMagnifier();
+
+            lightboxImage.style.backgroundSize =
+                "";
+
+
+            lightboxImage.style.backgroundPosition =
+                "";
+
         }
 
     }
 );
 
+
+/* ========================================
+LIGHTBOX MAGNIFICATION
+======================================== */
 
 lightboxImage.addEventListener(
     "pointermove",
@@ -887,29 +1100,33 @@ lightboxImage.addEventListener(
             return;
         }
 
+
         const rect =
             lightboxImage.getBoundingClientRect();
 
+
         const x =
             (
-                (event.clientX - rect.left) /
+                (event.clientX -
+                    rect.left) /
                 rect.width
             ) * 100;
 
+
         const y =
             (
-                (event.clientY - rect.top) /
+                (event.clientY -
+                    rect.top) /
                 rect.height
             ) * 100;
+
 
         lightboxImage.style.backgroundSize =
             "175% 175%";
 
+
         lightboxImage.style.backgroundPosition =
             `${x}% ${y}%`;
-
-        lightboxImage.style.backgroundRepeat =
-            "no-repeat";
 
     }
 );
@@ -923,15 +1140,20 @@ lightboxImage.addEventListener(
             return;
         }
 
+
+        lightboxImage.style.backgroundSize =
+            "";
+
+
         lightboxImage.style.backgroundPosition =
-            "center";
+            "";
 
     }
 );
 
 
 /* ========================================
-   SECTION SCROLL
+SECTION SCROLL
 ======================================== */
 
 let scrollAnimation = null;
@@ -943,28 +1165,35 @@ function smoothScrollTo(element) {
         return;
     }
 
+
     const start =
         window.scrollY;
+
 
     const target =
         element.getBoundingClientRect().top +
         window.scrollY -
         65;
 
+
     const distance =
-        target - start;
+        target -
+        start;
+
 
     const duration =
         Math.min(
             1250,
             Math.max(
                 750,
-                Math.abs(distance) * .62
+                Math.abs(distance) * 0.62
             )
         );
 
+
     const startTime =
         performance.now();
+
 
     if (scrollAnimation) {
 
@@ -974,39 +1203,39 @@ function smoothScrollTo(element) {
 
     }
 
-    /*
-        Stop wheel momentum when using
-        navigation buttons.
-    */
-
-    wheelVelocity = 0;
-    wheelTarget = target;
-    wheelAnimation = false;
-
 
     function animate(time) {
 
         const progress =
             Math.min(
                 1,
-                (time - startTime) /
-                duration
+                (
+                    time -
+                    startTime
+                ) / duration
             );
+
 
         const eased =
             1 -
             Math.pow(
-                1 - progress,
+                1 -
+                progress,
                 5
             );
+
 
         window.scrollTo(
             0,
             start +
-            distance * eased
+            distance *
+            eased
         );
 
-        if (progress < 1) {
+
+        if (
+            progress < 1
+        ) {
 
             scrollAnimation =
                 requestAnimationFrame(
@@ -1015,14 +1244,13 @@ function smoothScrollTo(element) {
 
         } else {
 
-            scrollAnimation = null;
-
-            wheelTarget =
-                window.scrollY;
+            scrollAnimation =
+                null;
 
         }
 
     }
+
 
     scrollAnimation =
         requestAnimationFrame(
@@ -1033,7 +1261,7 @@ function smoothScrollTo(element) {
 
 
 /* ========================================
-   NAVIGATION
+NAVIGATION
 ======================================== */
 
 navItems.forEach(
@@ -1048,6 +1276,7 @@ navItems.forEach(
                         item.dataset.target
                     );
 
+
                 smoothScrollTo(
                     target
                 );
@@ -1059,44 +1288,60 @@ navItems.forEach(
 );
 
 
-pricingButton.addEventListener(
-    "click",
-    () => {
+/* ========================================
+HERO BUTTONS
+======================================== */
 
-        smoothScrollTo(
-            pricingSection
-        );
+if (pricingButton) {
 
-    }
-);
+    pricingButton.addEventListener(
+        "click",
+        () => {
 
+            smoothScrollTo(
+                pricingSection
+            );
 
-socialsHeroButton.addEventListener(
-    "click",
-    () => {
+        }
+    );
 
-        smoothScrollTo(
-            socialsSection
-        );
-
-    }
-);
+}
 
 
-contactButton.addEventListener(
-    "click",
-    () => {
+if (socialsHeroButton) {
 
-        smoothScrollTo(
-            socialsSection
-        );
+    socialsHeroButton.addEventListener(
+        "click",
+        () => {
 
-    }
-);
+            smoothScrollTo(
+                socialsSection
+            );
+
+        }
+    );
+
+}
+
+
+if (contactButton) {
+
+    contactButton.addEventListener(
+        "click",
+        () => {
+
+            smoothScrollTo(
+                socialsSection
+            );
+
+        }
+    );
+
+}
 
 
 /* ========================================
-   ACTIVE NAV
+ACTIVE NAV
 ======================================== */
 
 const sectionObserver =
@@ -1112,6 +1357,7 @@ const sectionObserver =
 
                         const id =
                             entry.target.dataset.section;
+
 
                         navItems.forEach(
                             (item) => {
@@ -1131,7 +1377,9 @@ const sectionObserver =
 
         },
         {
-            rootMargin: "-35% 0px -55% 0px",
+            rootMargin:
+                "-35% 0px -55% 0px",
+
             threshold: 0
         }
     );
@@ -1149,7 +1397,7 @@ sections.forEach(
 
 
 /* ========================================
-   SCROLL REVEALS
+SCROLL REVEALS
 ======================================== */
 
 const revealObserver =
@@ -1167,6 +1415,7 @@ const revealObserver =
                             "visible"
                         );
 
+
                         revealObserver.unobserve(
                             entry.target
                         );
@@ -1178,8 +1427,10 @@ const revealObserver =
 
         },
         {
-            threshold: .08,
-            rootMargin: "0px 0px -80px 0px"
+            threshold: 0.08,
+
+            rootMargin:
+                "0px 0px -80px 0px"
         }
     );
 
@@ -1196,7 +1447,7 @@ revealSections.forEach(
 
 
 /* ========================================
-   SCROLL PROGRESS
+SCROLL PROGRESS
 ======================================== */
 
 function updateScrollProgress() {
@@ -1204,17 +1455,27 @@ function updateScrollProgress() {
     const scrollTop =
         window.scrollY;
 
+
     const scrollHeight =
         document.documentElement.scrollHeight -
         window.innerHeight;
+
 
     const progress =
         scrollHeight > 0
             ? scrollTop / scrollHeight
             : 0;
 
-    scrollProgress.style.height =
-        `${Math.max(35, progress * 100)}%`;
+
+    if (scrollProgress) {
+
+        scrollProgress.style.height =
+            `${Math.max(
+                35,
+                progress * 100
+            )}%`;
+
+    }
 
 }
 
@@ -1227,16 +1488,18 @@ window.addEventListener(
     }
 );
 
+
 window.addEventListener(
     "resize",
     updateScrollProgress
 );
 
+
 updateScrollProgress();
 
 
 /* ========================================
-   FAQ
+FAQ
 ======================================== */
 
 const faqItems =
@@ -1255,6 +1518,7 @@ faqItems.forEach(
                 if (!item.open) {
                     return;
                 }
+
 
                 faqItems.forEach(
                     (other) => {
@@ -1280,7 +1544,7 @@ faqItems.forEach(
 
 
 /* ========================================
-   PREVENT IMAGE DRAGGING
+PREVENT IMAGE DRAGGING
 ======================================== */
 
 gallery.addEventListener(
@@ -1294,7 +1558,7 @@ gallery.addEventListener(
 
 
 /* ========================================
-   INITIALIZE
+INITIALIZE
 ======================================== */
 
 window.addEventListener(
@@ -1305,11 +1569,14 @@ window.addEventListener(
 
         updateScrollProgress();
 
+
         setTimeout(
             () => {
 
                 document
-                    .querySelector(".hero")
+                    .querySelector(
+                        ".hero"
+                    )
                     ?.classList.add(
                         "visible"
                     );
