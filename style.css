@@ -12,7 +12,6 @@ html {
 
 body {
     background: #080808;
-
     color: #ffffff;
 
     font-family:
@@ -34,7 +33,6 @@ body {
     min-height: 100vh;
 
     display: flex;
-
     align-items: center;
 
     padding: 60px;
@@ -43,7 +41,6 @@ body {
 
 .hero-content {
     width: 100%;
-
     max-width: 1400px;
 
     margin: 0 auto;
@@ -99,29 +96,29 @@ body {
 
     align-items: center;
 
-    gap: 14px;
+    gap: 16px;
 
-    margin-top: 32px;
-
-    font-size: 18px;
+    margin-top: 34px;
 }
 
 
 .hero-discord span {
     color: #555555;
 
-    font-size: 15px;
+    font-size: 17px;
 }
 
 
 .hero-discord strong {
     color: #ffffff;
 
-    font-size: 26px;
+    font-size: 34px;
 
-    font-weight: 600;
+    line-height: 1;
 
-    letter-spacing: -0.02em;
+    font-weight: 700;
+
+    letter-spacing: -0.025em;
 }
 
 
@@ -160,23 +157,10 @@ body {
 
 
 /* ========================================
-   GALLERY WRAPPER
+   GALLERY VIEWPORT
 ======================================== */
 
 .gallery-wrapper {
-
-    /*
-        IMPORTANT:
-
-        Hidden instead of auto.
-
-        This means the browser cannot use
-        the mouse wheel to scroll the gallery.
-
-        The page itself remains normally
-        scrollable.
-    */
-
     width: 100%;
 
     overflow: hidden;
@@ -184,6 +168,14 @@ body {
     cursor: grab;
 
     user-select: none;
+
+    /*
+        Vertical scrolling is still handled
+        normally by the browser.
+
+        Horizontal movement is controlled
+        entirely by JavaScript.
+    */
 
     touch-action: pan-y;
 }
@@ -195,7 +187,7 @@ body {
 
 
 /* ========================================
-   GALLERY
+   GALLERY TRACK
 ======================================== */
 
 .gallery {
@@ -207,11 +199,14 @@ body {
 
     padding:
         20px 60px;
+
+    will-change:
+        transform;
 }
 
 
 /* ========================================
-   PROJECT CARDS
+   CARDS
 ======================================== */
 
 .gallery-item {
@@ -233,7 +228,7 @@ body {
 
     overflow: hidden;
 
-    border-radius: 5px;
+    border-radius: 6px;
 
     cursor: pointer;
 
@@ -242,7 +237,7 @@ body {
 
     transition:
         transform
-        0.45s
+        0.4s
         cubic-bezier(
             .16,
             1,
@@ -251,16 +246,18 @@ body {
         ),
 
         filter
-        0.45s
+        0.4s
         ease;
 }
 
 
-/* HOVER */
+/* ========================================
+   HOVER
+======================================== */
 
 .gallery-item:hover {
     transform:
-        scale(0.965);
+        scale(0.97);
 
     filter:
         brightness(1.08);
@@ -268,20 +265,19 @@ body {
 
 
 /* ========================================
-   CLICK / PRESS ANIMATION
+   CLICK / PRESS
 ======================================== */
 
 .gallery-item.pressing {
-
     transform:
-        scale(0.90);
+        scale(0.91);
 
     filter:
-        brightness(0.80);
+        brightness(0.78);
 
     transition:
         transform
-        0.12s
+        0.1s
         cubic-bezier(
             .4,
             0,
@@ -290,7 +286,7 @@ body {
         ),
 
         filter
-        0.12s
+        0.1s
         ease;
 }
 
@@ -323,19 +319,18 @@ body {
 
 
 /* ========================================
-   IMAGE NUMBER
+   NUMBERS
 ======================================== */
 
 .image-number {
     position: absolute;
 
     top: 24px;
-
     left: 24px;
 
     z-index: 2;
 
-    color: white;
+    color: #ffffff;
 
     font-size: 14px;
 
@@ -403,7 +398,6 @@ body {
 ======================================== */
 
 .lightbox {
-
     position: fixed;
 
     inset: 0;
@@ -423,7 +417,7 @@ body {
             0,
             0,
             0,
-            0.78
+            0.8
         );
 
     backdrop-filter:
@@ -438,17 +432,16 @@ body {
 
     transition:
         opacity
-        0.4s
+        0.35s
         ease,
 
         visibility
-        0.4s
+        0.35s
         ease;
 }
 
 
 .lightbox.active {
-
     opacity: 1;
 
     visibility: visible;
@@ -456,11 +449,10 @@ body {
 
 
 /* ========================================
-   LARGE IMAGE
+   ENLARGED IMAGE
 ======================================== */
 
 .lightbox-content {
-
     width:
         min(
             85vw,
@@ -480,13 +472,13 @@ body {
     justify-content: center;
 
     transform:
-        scale(0.72);
+        scale(0.7);
 
     opacity: 0;
 
     transition:
         transform
-        0.6s
+        0.55s
         cubic-bezier(
             .16,
             1,
@@ -495,14 +487,13 @@ body {
         ),
 
         opacity
-        0.35s
+        0.3s
         ease;
 }
 
 
 .lightbox.active
 .lightbox-content {
-
     transform:
         scale(1);
 
@@ -511,7 +502,6 @@ body {
 
 
 .lightbox-image {
-
     width: 100%;
 
     height: 100%;
@@ -526,7 +516,7 @@ body {
 
     padding: 30px;
 
-    border-radius: 5px;
+    border-radius: 7px;
 
     box-shadow:
         0 40px 120px
@@ -540,8 +530,7 @@ body {
 
 
 #lightboxNumber {
-
-    color: white;
+    color: #ffffff;
 
     font-size: 16px;
 
@@ -556,20 +545,17 @@ body {
 ======================================== */
 
 .lightbox-close {
-
     position: absolute;
 
     top: 25px;
-
     right: 30px;
 
     z-index: 10;
 
-    width: 55px;
+    width: 58px;
+    height: 58px;
 
-    height: 55px;
-
-    border: 0;
+    border: none;
 
     border-radius: 50%;
 
@@ -581,9 +567,9 @@ body {
             0.1
         );
 
-    color: white;
+    color: #ffffff;
 
-    font-size: 32px;
+    font-size: 34px;
 
     line-height: 1;
 
@@ -601,7 +587,6 @@ body {
 
 
 .lightbox-close:hover {
-
     transform:
         rotate(90deg)
         scale(1.1);
@@ -617,7 +602,6 @@ body {
 
 
 .lightbox-close:active {
-
     transform:
         rotate(90deg)
         scale(0.9);
@@ -648,14 +632,19 @@ body {
 
 
     .hero-discord {
-        margin-top: 25px;
+        gap: 11px;
 
-        gap: 10px;
+        margin-top: 26px;
+    }
+
+
+    .hero-discord span {
+        font-size: 14px;
     }
 
 
     .hero-discord strong {
-        font-size: 22px;
+        font-size: 27px;
     }
 
 
@@ -667,7 +656,6 @@ body {
 
 
     .gallery-header {
-
         width:
             calc(100% - 60px);
 
@@ -689,7 +677,6 @@ body {
 
 
     .gallery-item {
-
         width: 72vw;
 
         height: 100vw;
@@ -702,7 +689,6 @@ body {
 
 
     .lightbox-content {
-
         width: 90vw;
 
         height: 75vh;
@@ -710,7 +696,6 @@ body {
 
 
     .lightbox-close {
-
         top: 15px;
 
         right: 15px;
