@@ -2,26 +2,44 @@
    ELEMENTS
 ======================================== */
 
-const galleryWrapper = document.getElementById("galleryWrapper");
-const gallery = document.getElementById("gallery");
+const galleryWrapper =
+    document.getElementById("galleryWrapper");
 
-const pricingButton = document.getElementById("pricingButton");
-const pricingSection = document.getElementById("pricing");
+const gallery =
+    document.getElementById("gallery");
 
-const contactButton = document.getElementById("contactButton");
+const pricingButton =
+    document.getElementById("pricingButton");
 
-const lightbox = document.getElementById("lightbox");
-const lightboxImage = document.getElementById("lightboxImage");
-const lightboxClose = document.getElementById("lightboxClose");
-const lightboxMagnifier = document.getElementById("lightboxMagnifier");
+const contactButton =
+    document.getElementById("contactButton");
 
-const navItems = document.querySelectorAll(".nav-item");
+const lightbox =
+    document.getElementById("lightbox");
 
-const cursorDot = document.getElementById("cursorDot");
-const cursorGlow = document.getElementById("cursorGlow");
+const lightboxImage =
+    document.getElementById("lightboxImage");
 
-const scrollProgressBar =
-    document.getElementById("scrollProgressBar");
+const lightboxClose =
+    document.getElementById("lightboxClose");
+
+const lightboxZoom =
+    document.getElementById("lightboxZoom");
+
+const navItems =
+    document.querySelectorAll(".nav-item");
+
+const sections =
+    document.querySelectorAll("[data-section]");
+
+const cursorDot =
+    document.querySelector(".cursor-dot");
+
+const cursorGlow =
+    document.querySelector(".cursor-glow");
+
+const scrollbarThumb =
+    document.querySelector(".scrollbar-thumb");
 
 
 /* ========================================
@@ -37,104 +55,168 @@ let dotY = mouseY;
 let glowX = mouseX;
 let glowY = mouseY;
 
+document.addEventListener(
+    "pointermove",
+    (event) => {
 
-document.addEventListener("pointermove", (event) => {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
 
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+        document.documentElement.style.setProperty(
+            "--mouse-x",
+            `${(mouseX / window.innerWidth) * 100}%`
+        );
 
-    document.documentElement.style.setProperty(
-        "--mouse-x",
-        `${mouseX}px`
+        document.documentElement.style.setProperty(
+            "--mouse-y",
+            `${(mouseY / window.innerHeight) * 100}%`
+        );
+
+    }
+);
+
+
+function animateCursor() {
+
+    /*
+        Lower values create more delay.
+    */
+
+    dotX +=
+        (mouseX - dotX) * 0.075;
+
+    dotY +=
+        (mouseY - dotY) * 0.075;
+
+
+    glowX +=
+        (mouseX - glowX) * 0.035;
+
+    glowY +=
+        (mouseY - glowY) * 0.035;
+
+
+    if (cursorDot) {
+
+        cursorDot.style.left =
+            `${dotX}px`;
+
+        cursorDot.style.top =
+            `${dotY}px`;
+
+    }
+
+
+    if (cursorGlow) {
+
+        cursorGlow.style.left =
+            `${glowX}px`;
+
+        cursorGlow.style.top =
+            `${glowY}px`;
+
+    }
+
+
+    requestAnimationFrame(
+        animateCursor
     );
-
-    document.documentElement.style.setProperty(
-        "--mouse-y",
-        `${mouseY}px`
-    );
-
-});
-
-
-function cursorLoop() {
-
-    dotX += (mouseX - dotX) * 0.16;
-    dotY += (mouseY - dotY) * 0.16;
-
-    glowX += (mouseX - glowX) * 0.055;
-    glowY += (mouseY - glowY) * 0.055;
-
-    cursorDot.style.left = `${dotX}px`;
-    cursorDot.style.top = `${dotY}px`;
-
-    cursorGlow.style.left = `${glowX}px`;
-    cursorGlow.style.top = `${glowY}px`;
-
-    requestAnimationFrame(cursorLoop);
 
 }
 
-cursorLoop();
+
+animateCursor();
 
 
 /* ========================================
-   3D TILT
+   SMOOTH 3D TILT
 ======================================== */
 
-const tiltCards =
+const tiltElements =
     document.querySelectorAll(".tilt-card");
 
 
-tiltCards.forEach((card) => {
+tiltElements.forEach(
+    (element) => {
 
-    card.addEventListener("pointermove", (event) => {
+        let currentX = 0;
+        let currentY = 0;
 
-        if (
-            event.target.closest(
-                "button, a, summary, input, select, textarea"
-            )
-        ) {
-            return;
+        let targetX = 0;
+        let targetY = 0;
+
+
+        function tiltLoop() {
+
+            currentX +=
+                (targetX - currentX) * 0.12;
+
+            currentY +=
+                (targetY - currentY) * 0.12;
+
+
+            element.style.transform =
+                `
+                perspective(900px)
+                rotateX(${currentY}deg)
+                rotateY(${currentX}deg)
+                translateZ(0)
+                `;
+
+
+            requestAnimationFrame(
+                tiltLoop
+            );
+
         }
 
-        const rect =
-            card.getBoundingClientRect();
 
-        const x =
-            (event.clientX - rect.left) /
-            rect.width;
-
-        const y =
-            (event.clientY - rect.top) /
-            rect.height;
-
-        const rotateY =
-            (x - 0.5) * 7;
-
-        const rotateX =
-            (0.5 - y) * 7;
-
-        card.style.transform =
-            `perspective(900px)
-             rotateX(${rotateX}deg)
-             rotateY(${rotateY}deg)
-             translateZ(0)`;
-
-    });
+        tiltLoop();
 
 
-    card.addEventListener("pointerleave", () => {
+        element.addEventListener(
+            "pointermove",
+            (event) => {
 
-        card.style.transform =
-            "perspective(900px) rotateX(0deg) rotateY(0deg)";
+                const rect =
+                    element.getBoundingClientRect();
 
-    });
 
-});
+                const x =
+                    (event.clientX - rect.left) /
+                    rect.width;
+
+                const y =
+                    (event.clientY - rect.top) /
+                    rect.height;
+
+
+                targetX =
+                    (x - 0.5) * 8;
+
+                targetY =
+                    (0.5 - y) * 8;
+
+            }
+        );
+
+
+        element.addEventListener(
+            "pointerleave",
+            () => {
+
+                targetX = 0;
+                targetY = 0;
+
+            }
+        );
+
+    }
+);
 
 
 /* ========================================
-   GALLERY SETUP
+   GALLERY LOOP
 ======================================== */
 
 const originalItems =
@@ -143,19 +225,22 @@ const originalItems =
     );
 
 
-originalItems.forEach((item) => {
+originalItems.forEach(
+    (item) => {
 
-    gallery.appendChild(
-        item.cloneNode(true)
-    );
+        gallery.appendChild(
+            item.cloneNode(true)
+        );
 
-});
+    }
+);
 
 
 let singleSetWidth = 0;
-let position = 0;
 
-let lastTime =
+let galleryPosition = 0;
+
+let galleryLastTime =
     performance.now();
 
 
@@ -163,42 +248,48 @@ const AUTO_SPEED = 16;
 
 
 /* ========================================
-   DRAG / MOMENTUM
+   GALLERY DRAG
 ======================================== */
 
 let isDragging = false;
+
 let pointerId = null;
 
 let dragStartX = 0;
+
 let dragStartPosition = 0;
 
 let lastPointerX = 0;
+
 let lastPointerTime = 0;
 
 let dragVelocity = 0;
-let momentum = 0;
+
+let galleryMomentum = 0;
 
 let hasDragged = false;
+
 let pressedItem = null;
 
-const MOMENTUM_MULTIPLIER = 4.4;
-const MOMENTUM_FRICTION = 0.975;
-const MAX_MOMENTUM = 6000;
 
+const MOMENTUM_MULTIPLIER = 2.25;
 
-/* ========================================
-   MEASURE
-======================================== */
+const MOMENTUM_FRICTION = 0.94;
+
+const MAX_MOMENTUM = 1800;
+
 
 function measureGallery() {
 
     singleSetWidth =
         gallery.scrollWidth / 2;
 
-    normalizePosition();
+    normalizeGallery();
+
     renderGallery();
 
 }
+
 
 window.addEventListener(
     "load",
@@ -211,22 +302,31 @@ window.addEventListener(
 );
 
 
-/* ========================================
-   LOOP
-======================================== */
-
-function normalizePosition() {
+function normalizeGallery() {
 
     if (!singleSetWidth) {
         return;
     }
 
-    while (position <= -singleSetWidth) {
-        position += singleSetWidth;
+
+    while (
+        galleryPosition <=
+        -singleSetWidth
+    ) {
+
+        galleryPosition +=
+            singleSetWidth;
+
     }
 
-    while (position > 0) {
-        position -= singleSetWidth;
+
+    while (
+        galleryPosition > 0
+    ) {
+
+        galleryPosition -=
+            singleSetWidth;
+
     }
 
 }
@@ -235,24 +335,22 @@ function normalizePosition() {
 function renderGallery() {
 
     gallery.style.transform =
-        `translate3d(${position}px, 0, 0)`;
+        `translate3d(${galleryPosition}px,0,0)`;
 
 }
 
 
-/* ========================================
-   GALLERY ANIMATION
-======================================== */
-
-function animationLoop(currentTime) {
+function galleryLoop(currentTime) {
 
     const delta =
         Math.min(
-            currentTime - lastTime,
+            currentTime -
+            galleryLastTime,
             50
         );
 
-    lastTime =
+
+    galleryLastTime =
         currentTime;
 
 
@@ -261,13 +359,16 @@ function animationLoop(currentTime) {
         !lightbox.classList.contains("active")
     ) {
 
-        if (Math.abs(momentum) > 0.15) {
+        if (
+            Math.abs(galleryMomentum) > .1
+        ) {
 
-            position +=
-                momentum *
+            galleryPosition +=
+                galleryMomentum *
                 (delta / 1000);
 
-            momentum *=
+
+            galleryMomentum *=
                 Math.pow(
                     MOMENTUM_FRICTION,
                     delta / 16.67
@@ -275,9 +376,9 @@ function animationLoop(currentTime) {
 
         } else {
 
-            momentum = 0;
+            galleryMomentum = 0;
 
-            position -=
+            galleryPosition -=
                 AUTO_SPEED *
                 (delta / 1000);
 
@@ -286,43 +387,53 @@ function animationLoop(currentTime) {
     }
 
 
-    normalizePosition();
+    normalizeGallery();
+
     renderGallery();
 
     requestAnimationFrame(
-        animationLoop
+        galleryLoop
     );
 
 }
 
+
 requestAnimationFrame(
-    animationLoop
+    galleryLoop
 );
 
 
 /* ========================================
-   POINTER DOWN
+   GALLERY POINTER DOWN
 ======================================== */
 
 galleryWrapper.addEventListener(
     "pointerdown",
     (event) => {
 
-        if (event.button !== 0) {
+        if (
+            event.button !== 0
+        ) {
             return;
         }
 
+
         isDragging = true;
-        pointerId = event.pointerId;
+
+        pointerId =
+            event.pointerId;
 
         hasDragged = false;
-        momentum = 0;
+
+        galleryMomentum = 0;
+
 
         dragStartX =
             event.clientX;
 
         dragStartPosition =
-            position;
+            galleryPosition;
+
 
         lastPointerX =
             event.clientX;
@@ -332,23 +443,21 @@ galleryWrapper.addEventListener(
 
         dragVelocity = 0;
 
+
         galleryWrapper.classList.add(
             "dragging"
         );
 
 
-        const item =
+        pressedItem =
             event.target.closest(
                 ".gallery-item"
             );
 
 
-        if (item) {
+        if (pressedItem) {
 
-            pressedItem =
-                item;
-
-            item.classList.add(
+            pressedItem.classList.add(
                 "pressing"
             );
 
@@ -359,6 +468,7 @@ galleryWrapper.addEventListener(
             event.pointerId
         );
 
+
         event.preventDefault();
 
     }
@@ -366,7 +476,7 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-   POINTER MOVE
+   GALLERY POINTER MOVE
 ======================================== */
 
 galleryWrapper.addEventListener(
@@ -377,20 +487,27 @@ galleryWrapper.addEventListener(
             !isDragging ||
             event.pointerId !== pointerId
         ) {
+
             return;
+
         }
 
 
         const now =
             performance.now();
 
+
         const distance =
             event.clientX -
             dragStartX;
 
 
-        if (Math.abs(distance) > 7) {
+        if (
+            Math.abs(distance) > 7
+        ) {
+
             hasDragged = true;
+
         }
 
 
@@ -406,12 +523,13 @@ galleryWrapper.addEventListener(
         }
 
 
-        position =
+        galleryPosition =
             dragStartPosition +
             distance;
 
 
-        normalizePosition();
+        normalizeGallery();
+
         renderGallery();
 
 
@@ -420,14 +538,18 @@ galleryWrapper.addEventListener(
             lastPointerTime;
 
 
-        if (elapsed > 0) {
+        if (
+            elapsed > 0
+        ) {
 
             dragVelocity =
                 (
                     event.clientX -
                     lastPointerX
                 ) /
-                (elapsed / 1000);
+                (
+                    elapsed / 1000
+                );
 
         }
 
@@ -438,6 +560,7 @@ galleryWrapper.addEventListener(
         lastPointerTime =
             now;
 
+
         event.preventDefault();
 
     }
@@ -445,16 +568,18 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-   RELEASE
+   GALLERY RELEASE
 ======================================== */
 
-function releaseDrag(event) {
+function releaseGallery(event) {
 
     if (
         !isDragging ||
         event.pointerId !== pointerId
     ) {
+
         return;
+
     }
 
 
@@ -478,17 +603,20 @@ function releaseDrag(event) {
             "clicked"
         );
 
-        setTimeout(() => {
 
-            if (pressedItem) {
-                pressedItem.classList.remove(
+        setTimeout(
+            () => {
+
+                pressedItem?.classList.remove(
                     "clicked"
                 );
-            }
 
-        }, 300);
+            },
+            350
+        );
 
-        openProject(
+
+        openLightbox(
             pressedItem
         );
 
@@ -497,16 +625,17 @@ function releaseDrag(event) {
 
     if (hasDragged) {
 
-        momentum =
+        galleryMomentum =
             dragVelocity *
             MOMENTUM_MULTIPLIER;
 
-        momentum =
+
+        galleryMomentum =
             Math.max(
                 -MAX_MOMENTUM,
                 Math.min(
                     MAX_MOMENTUM,
-                    momentum
+                    galleryMomentum
                 )
             );
 
@@ -523,7 +652,9 @@ function releaseDrag(event) {
 
 
     pressedItem = null;
+
     pointerId = null;
+
     dragVelocity = 0;
 
 }
@@ -531,12 +662,121 @@ function releaseDrag(event) {
 
 galleryWrapper.addEventListener(
     "pointerup",
-    releaseDrag
+    releaseGallery
 );
 
 galleryWrapper.addEventListener(
     "pointercancel",
-    releaseDrag
+    releaseGallery
+);
+
+
+/* ========================================
+   GALLERY TILT
+======================================== */
+
+const galleryItems =
+    document.querySelectorAll(
+        ".gallery-item"
+    );
+
+
+galleryItems.forEach(
+    (item) => {
+
+        let tiltX = 0;
+        let tiltY = 0;
+
+        let currentX = 0;
+        let currentY = 0;
+
+
+        function updateTilt() {
+
+            currentX +=
+                (tiltX - currentX) *
+                .1;
+
+            currentY +=
+                (tiltY - currentY) *
+                .1;
+
+
+            if (
+                !isDragging &&
+                !item.classList.contains("zooming")
+            ) {
+
+                item.style.transform =
+                    `
+                    perspective(900px)
+                    rotateX(${currentY}deg)
+                    rotateY(${currentX}deg)
+                    `;
+
+            }
+
+
+            requestAnimationFrame(
+                updateTilt
+            );
+
+        }
+
+
+        updateTilt();
+
+
+        item.addEventListener(
+            "pointermove",
+            (event) => {
+
+                if (isDragging) {
+                    return;
+                }
+
+
+                const rect =
+                    item.getBoundingClientRect();
+
+
+                const x =
+                    (
+                        event.clientX -
+                        rect.left
+                    ) /
+                    rect.width;
+
+
+                const y =
+                    (
+                        event.clientY -
+                        rect.top
+                    ) /
+                    rect.height;
+
+
+                tiltX =
+                    (x - .5) * 5;
+
+                tiltY =
+                    (.5 - y) * 5;
+
+            }
+        );
+
+
+        item.addEventListener(
+            "pointerleave",
+            () => {
+
+                tiltX = 0;
+                tiltY = 0;
+
+            }
+        );
+
+    }
 );
 
 
@@ -546,21 +786,19 @@ galleryWrapper.addEventListener(
 
 let currentLightboxItem = null;
 
+let zoomActive = false;
 
-function openProject(item) {
+
+function openLightbox(item) {
 
     currentLightboxItem =
         item;
 
 
-    const background =
+    lightboxImage.style.background =
         window.getComputedStyle(
             item
         ).backgroundColor;
-
-
-    lightboxImage.style.background =
-        background;
 
 
     lightbox.classList.add(
@@ -568,8 +806,25 @@ function openProject(item) {
     );
 
 
+    lightbox.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
     document.body.style.overflow =
         "hidden";
+
+
+    zoomActive = false;
+
+    lightboxZoom.classList.remove(
+        "active"
+    );
+
+    lightboxImage.classList.remove(
+        "zoomed"
+    );
 
 }
 
@@ -580,14 +835,36 @@ function closeLightbox() {
         "active"
     );
 
+
+    lightbox.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    lightboxImage.classList.remove(
+        "zoomed"
+    );
+
+
+    lightboxZoom.classList.remove(
+        "active"
+    );
+
+
+    zoomActive = false;
+
+    currentLightboxItem = null;
+
     document.body.style.overflow =
         "";
 
-    currentLightboxItem =
-        null;
-
 }
 
+
+/* ========================================
+   LIGHTBOX CLOSE
+======================================== */
 
 lightboxClose.addEventListener(
     "click",
@@ -615,8 +892,13 @@ document.addEventListener(
     "keydown",
     (event) => {
 
-        if (event.key === "Escape") {
+        if (
+            event.key === "Escape" &&
+            lightbox.classList.contains("active")
+        ) {
+
             closeLightbox();
+
         }
 
     }
@@ -627,41 +909,26 @@ document.addEventListener(
    LIGHTBOX MAGNIFIER
 ======================================== */
 
-let lightboxZoomed = false;
-
-
-lightboxMagnifier.addEventListener(
+lightboxZoom.addEventListener(
     "click",
     (event) => {
 
         event.stopPropagation();
 
-        if (!currentLightboxItem) {
-            return;
-        }
+        zoomActive =
+            !zoomActive;
 
 
-        lightboxZoomed =
-            !lightboxZoomed;
+        lightboxZoom.classList.toggle(
+            "active",
+            zoomActive
+        );
 
 
-        if (lightboxZoomed) {
-
-            lightboxImage.style.transform =
-                "scale(1.7)";
-
-            lightboxImage.style.cursor =
-                "zoom-out";
-
-        } else {
-
-            lightboxImage.style.transform =
-                "scale(1)";
-
-            lightboxImage.style.cursor =
-                "";
-
-        }
+        lightboxImage.classList.toggle(
+            "zoomed",
+            zoomActive
+        );
 
     }
 );
@@ -671,9 +938,7 @@ lightboxImage.addEventListener(
     "pointermove",
     (event) => {
 
-        if (
-            !lightboxZoomed
-        ) {
+        if (!zoomActive) {
             return;
         }
 
@@ -684,103 +949,221 @@ lightboxImage.addEventListener(
 
         const x =
             (
-                (event.clientX - rect.left) /
+                (event.clientX -
+                rect.left) /
                 rect.width
             ) * 100;
 
 
         const y =
             (
-                (event.clientY - rect.top) /
+                (event.clientY -
+                rect.top) /
                 rect.height
             ) * 100;
 
 
-        lightboxImage.style.transformOrigin =
-            `${x}% ${y}%`;
+        lightboxImage.style.setProperty(
+            "--zoom-x",
+            `${x}%`
+        );
 
-    }
-);
-
-
-/* ========================================
-   PRICING / CONTACT
-======================================== */
-
-pricingButton.addEventListener(
-    "click",
-    () => {
-
-        smoothScrollTo(
-            pricingSection
+        lightboxImage.style.setProperty(
+            "--zoom-y",
+            `${y}%`
         );
 
     }
 );
 
 
-if (contactButton) {
+/* ========================================
+   SMOOTH PAGE SCROLL
+======================================== */
 
-    contactButton.addEventListener(
-        "click",
-        () => {
+let pageVelocity = 0;
 
-            window.open(
-                "https://discord.com",
-                "_blank",
-                "noopener,noreferrer"
-            );
+let pageScrollAnimation = null;
+
+let lastWheelTime = 0;
+
+
+const PAGE_FRICTION = .88;
+
+const PAGE_ACCELERATION = .85;
+
+const MAX_PAGE_VELOCITY = 3600;
+
+
+window.addEventListener(
+    "wheel",
+    (event) => {
+
+        if (
+            lightbox.classList.contains("active")
+        ) {
+
+            return;
 
         }
-    );
-
-}
 
 
-/* ========================================
-   NAVIGATION
-======================================== */
-
-navItems.forEach(
-    (item) => {
-
-        item.addEventListener(
-            "click",
-            () => {
-
-                const targetId =
-                    item.dataset.target;
-
-                const target =
-                    document.getElementById(
-                        targetId
-                    );
+        event.preventDefault();
 
 
-                if (!target) {
-                    return;
-                }
+        const now =
+            performance.now();
 
 
-                smoothScrollTo(
-                    target
+        const timeSinceLast =
+            now -
+            lastWheelTime;
+
+
+        lastWheelTime =
+            now;
+
+
+        /*
+            A burst of wheel input creates
+            velocity rather than separate
+            stepped movements.
+        */
+
+        const input =
+            event.deltaY *
+            PAGE_ACCELERATION;
+
+
+        pageVelocity +=
+            input;
+
+
+        /*
+            Prevent old momentum from becoming
+            excessive after a long pause.
+        */
+
+        if (
+            timeSinceLast > 120
+        ) {
+
+            pageVelocity *= .55;
+
+        }
+
+
+        pageVelocity =
+            Math.max(
+                -MAX_PAGE_VELOCITY,
+                Math.min(
+                    MAX_PAGE_VELOCITY,
+                    pageVelocity
+                )
+            );
+
+
+        if (
+            !pageScrollAnimation
+        ) {
+
+            pageScrollAnimation =
+                requestAnimationFrame(
+                    pageScrollLoop
                 );
 
-            }
-        );
+        }
 
+    },
+    {
+        passive: false
     }
 );
+
+
+function pageScrollLoop() {
+
+    const maxScroll =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
+
+
+    if (
+        Math.abs(pageVelocity) < .25
+    ) {
+
+        pageVelocity = 0;
+
+        pageScrollAnimation = null;
+
+        return;
+
+    }
+
+
+    let next =
+        window.scrollY +
+        pageVelocity *
+        .016;
+
+
+    next =
+        Math.max(
+            0,
+            Math.min(
+                maxScroll,
+                next
+            )
+        );
+
+
+    window.scrollTo(
+        0,
+        next
+    );
+
+
+    pageVelocity *=
+        PAGE_FRICTION;
+
+
+    if (
+        (
+            next <= 0 &&
+            pageVelocity < 0
+        ) ||
+        (
+            next >= maxScroll &&
+            pageVelocity > 0
+        )
+    ) {
+
+        pageVelocity = 0;
+
+    }
+
+
+    pageScrollAnimation =
+        requestAnimationFrame(
+            pageScrollLoop
+        );
+
+}
 
 
 /* ========================================
    SMOOTH SECTION SCROLL
 ======================================== */
 
-let scrollAnimation = null;
+let sectionScrollAnimation = null;
 
 
 function smoothScrollTo(element) {
+
+    if (!element) {
+        return;
+    }
+
 
     const start =
         window.scrollY;
@@ -789,7 +1172,7 @@ function smoothScrollTo(element) {
     const target =
         element.getBoundingClientRect().top +
         window.scrollY -
-        25;
+        105;
 
 
     const distance =
@@ -799,9 +1182,9 @@ function smoothScrollTo(element) {
 
     const duration =
         Math.min(
-            1200,
+            1250,
             Math.max(
-                650,
+                700,
                 Math.abs(distance) * .65
             )
         );
@@ -811,10 +1194,15 @@ function smoothScrollTo(element) {
         performance.now();
 
 
-    if (scrollAnimation) {
+    pageVelocity = 0;
+
+
+    if (
+        sectionScrollAnimation
+    ) {
 
         cancelAnimationFrame(
-            scrollAnimation
+            sectionScrollAnimation
         );
 
     }
@@ -828,7 +1216,8 @@ function smoothScrollTo(element) {
                 (
                     currentTime -
                     startTime
-                ) / duration
+                ) /
+                duration
             );
 
 
@@ -848,16 +1237,18 @@ function smoothScrollTo(element) {
         );
 
 
-        if (progress < 1) {
+        if (
+            progress < 1
+        ) {
 
-            scrollAnimation =
+            sectionScrollAnimation =
                 requestAnimationFrame(
                     animate
                 );
 
         } else {
 
-            scrollAnimation =
+            sectionScrollAnimation =
                 null;
 
         }
@@ -865,7 +1256,7 @@ function smoothScrollTo(element) {
     }
 
 
-    scrollAnimation =
+    sectionScrollAnimation =
         requestAnimationFrame(
             animate
         );
@@ -874,114 +1265,68 @@ function smoothScrollTo(element) {
 
 
 /* ========================================
-   NORMAL SCROLL MOMENTUM
+   PRICING BUTTON
 ======================================== */
 
-let wheelVelocity = 0;
-let wheelAnimation = null;
-let lastWheelTime = 0;
+pricingButton.addEventListener(
+    "click",
+    () => {
 
+        smoothScrollTo(
+            document.getElementById("pricing")
+        );
 
-window.addEventListener(
-    "wheel",
-    (event) => {
-
-        if (
-            lightbox.classList.contains(
-                "active"
-            )
-        ) {
-            return;
-        }
-
-
-        event.preventDefault();
-
-
-        const now =
-            performance.now();
-
-
-        const elapsed =
-            Math.max(
-                8,
-                now - lastWheelTime
-            );
-
-
-        lastWheelTime =
-            now;
-
-
-        wheelVelocity +=
-            event.deltaY *
-            0.72;
-
-
-        wheelVelocity =
-            Math.max(
-                -1800,
-                Math.min(
-                    1800,
-                    wheelVelocity
-                )
-            );
-
-
-        if (!wheelAnimation) {
-            wheelAnimation =
-                requestAnimationFrame(
-                    wheelScrollLoop
-                );
-        }
-
-    },
-    {
-        passive: false
     }
 );
 
 
-function wheelScrollLoop() {
+/* ========================================
+   CONTACT BUTTON
+======================================== */
 
-    if (
-        Math.abs(wheelVelocity) < .3
-    ) {
+contactButton.addEventListener(
+    "click",
+    () => {
 
-        wheelVelocity = 0;
-        wheelAnimation = null;
-
-        return;
-
-    }
-
-
-    window.scrollBy(
-        0,
-        wheelVelocity * .045
-    );
-
-
-    wheelVelocity *= .90;
-
-
-    wheelAnimation =
-        requestAnimationFrame(
-            wheelScrollLoop
+        smoothScrollTo(
+            document.getElementById("socials")
         );
 
-}
+    }
+);
+
+
+/* ========================================
+   BOTTOM NAV
+======================================== */
+
+navItems.forEach(
+    (item) => {
+
+        item.addEventListener(
+            "click",
+            () => {
+
+                const target =
+                    document.getElementById(
+                        item.dataset.target
+                    );
+
+
+                smoothScrollTo(
+                    target
+                );
+
+            }
+        );
+
+    }
+);
 
 
 /* ========================================
    ACTIVE NAV
 ======================================== */
-
-const sections =
-    document.querySelectorAll(
-        "[data-section]"
-    );
-
 
 const sectionObserver =
     new IntersectionObserver(
@@ -1016,7 +1361,7 @@ const sectionObserver =
 
         },
         {
-            threshold: .3
+            threshold: .2
         }
     );
 
@@ -1029,6 +1374,101 @@ sections.forEach(
         );
 
     }
+);
+
+
+/* ========================================
+   CUSTOM SCROLLBAR
+======================================== */
+
+function updateScrollbar() {
+
+    if (!scrollbarThumb) {
+        return;
+    }
+
+
+    const documentHeight =
+        document.documentElement.scrollHeight;
+
+
+    const viewportHeight =
+        window.innerHeight;
+
+
+    const maxScroll =
+        documentHeight -
+        viewportHeight;
+
+
+    if (
+        maxScroll <= 0
+    ) {
+
+        scrollbarThumb.style.height =
+            "100%";
+
+        scrollbarThumb.style.transform =
+            "translateY(0)";
+
+        return;
+
+    }
+
+
+    const viewportRatio =
+        viewportHeight /
+        documentHeight;
+
+
+    const thumbHeight =
+        Math.max(
+            55,
+            (
+                viewportRatio *
+                100
+            )
+        );
+
+
+    const availableTravel =
+        100 -
+        thumbHeight;
+
+
+    const scrollRatio =
+        window.scrollY /
+        maxScroll;
+
+
+    scrollbarThumb.style.height =
+        `${thumbHeight}%`;
+
+
+    scrollbarThumb.style.transform =
+        `translateY(${availableTravel * scrollRatio}%)`;
+
+}
+
+
+window.addEventListener(
+    "scroll",
+    updateScrollbar,
+    {
+        passive: true
+    }
+);
+
+
+window.addEventListener(
+    "resize",
+    updateScrollbar
+);
+
+
+window.addEventListener(
+    "load",
+    updateScrollbar
 );
 
 
@@ -1078,54 +1518,7 @@ faqItems.forEach(
 
 
 /* ========================================
-   SCROLL PROGRESS
-======================================== */
-
-function updateScrollProgress() {
-
-    const scrollTop =
-        window.scrollY;
-
-    const maxScroll =
-        document.documentElement.scrollHeight -
-        window.innerHeight;
-
-
-    if (maxScroll <= 0) {
-        return;
-    }
-
-
-    const progress =
-        scrollTop /
-        maxScroll;
-
-
-    const trackHeight =
-        100 -
-        20;
-
-
-    scrollProgressBar.style.top =
-        `${progress * trackHeight}%`;
-
-}
-
-
-window.addEventListener(
-    "scroll",
-    updateScrollProgress,
-    {
-        passive: true
-    }
-);
-
-
-updateScrollProgress();
-
-
-/* ========================================
-   PREVENT IMAGE DRAGGING
+   PREVENT GALLERY IMAGE DRAG
 ======================================== */
 
 gallery.addEventListener(
@@ -1136,3 +1529,12 @@ gallery.addEventListener(
 
     }
 );
+
+
+/* ========================================
+   INITIAL UPDATE
+======================================== */
+
+measureGallery();
+
+updateScrollbar();
