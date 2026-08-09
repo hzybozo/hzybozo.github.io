@@ -1,428 +1,279 @@
 /* ========================================
-ELEMENTS
+   ELEMENTS
 ======================================== */
 
-const galleryWrapper =
-    document.getElementById("galleryWrapper");
+const galleryWrapper = document.getElementById("galleryWrapper");
+const gallery = document.getElementById("gallery");
 
-const gallery =
-    document.getElementById("gallery");
+const pricingButton = document.getElementById("pricingButton");
+const socialsHeroButton = document.getElementById("socialsHeroButton");
+const contactButton = document.getElementById("contactButton");
 
-const pricingButton =
-    document.getElementById("pricingButton");
+const pricingSection = document.getElementById("pricing");
+const socialsSection = document.getElementById("socials");
 
-const socialsHeroButton =
-    document.getElementById("socialsHeroButton");
+const lightbox = document.getElementById("lightbox");
+const lightboxImage = document.getElementById("lightboxImage");
+const lightboxMagnifier = document.getElementById("lightboxMagnifier");
 
-const contactButton =
-    document.getElementById("contactButton");
+const navItems = document.querySelectorAll(".nav-item");
+const sections = document.querySelectorAll("[data-section]");
+const revealSections = document.querySelectorAll(".section-reveal");
 
-const pricingSection =
-    document.getElementById("pricing");
-
-const socialsSection =
-    document.getElementById("socials");
-
-const lightbox =
-    document.getElementById("lightbox");
-
-const lightboxImage =
-    document.getElementById("lightboxImage");
-
-const lightboxMagnifier =
-    document.getElementById("lightboxMagnifier");
-
-const navItems =
-    document.querySelectorAll(".nav-item");
-
-const sections =
-    document.querySelectorAll("[data-section]");
-
-const revealSections =
-    document.querySelectorAll(".section-reveal");
-
-const cursorDot =
-    document.querySelector(".cursor-dot");
-
-const cursorGlow =
-    document.querySelector(".cursor-glow");
-
-const scrollProgress =
-    document.getElementById("scrollProgress");
+const cursorDot = document.querySelector(".cursor-dot");
+const cursorGlow = document.querySelector(".cursor-glow");
+const scrollProgress = document.getElementById("scrollProgress");
 
 
 /* ========================================
-CURSOR
+   CURSOR
 ======================================== */
 
-let mouseX =
-    window.innerWidth / 2;
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
 
-let mouseY =
-    window.innerHeight / 2;
+let cursorX = mouseX;
+let cursorY = mouseY;
 
-let cursorX =
-    mouseX;
+document.addEventListener("pointermove", (event) => {
 
-let cursorY =
-    mouseY;
+    mouseX = event.clientX;
+    mouseY = event.clientY;
 
-
-document.addEventListener(
-    "pointermove",
-    (event) => {
-
-        mouseX =
-            event.clientX;
-
-        mouseY =
-            event.clientY;
-
-    }
-);
-
+});
 
 function cursorLoop() {
 
-    cursorX +=
-        (mouseX - cursorX) * 0.075;
+    cursorX += (mouseX - cursorX) * 0.075;
+    cursorY += (mouseY - cursorY) * 0.075;
 
-    cursorY +=
-        (mouseY - cursorY) * 0.075;
+    cursorDot.style.transform =
+        `translate3d(${cursorX - 4}px, ${cursorY - 4}px, 0)`;
 
+    cursorGlow.style.transform =
+        `translate3d(${cursorX - 180}px, ${cursorY - 180}px, 0)`;
 
-    if (cursorDot) {
-
-        cursorDot.style.transform =
-            `translate3d(
-                ${cursorX - 4}px,
-                ${cursorY - 4}px,
-                0
-            )`;
-
-    }
-
-
-    if (cursorGlow) {
-
-        cursorGlow.style.transform =
-            `translate3d(
-                ${cursorX - 180}px,
-                ${cursorY - 180}px,
-                0
-            )`;
-
-    }
-
-
-    requestAnimationFrame(
-        cursorLoop
-    );
-
+    requestAnimationFrame(cursorLoop);
 }
-
 
 cursorLoop();
 
 
 /* ========================================
-BACKGROUND CURSOR REACTION
+   BACKGROUND CURSOR REACTION
 ======================================== */
 
 let backgroundX = 0;
 let backgroundY = 0;
 
-
 function backgroundLoop() {
 
     backgroundX +=
-        (
-            (mouseX / window.innerWidth) * 30 -
-            backgroundX
-        ) * 0.035;
-
+        ((mouseX / window.innerWidth) * 30 - backgroundX) * .035;
 
     backgroundY +=
-        (
-            (mouseY / window.innerHeight) * 30 -
-            backgroundY
-        ) * 0.035;
-
+        ((mouseY / window.innerHeight) * 30 - backgroundY) * .035;
 
     document.documentElement.style.setProperty(
         "--mouse-x",
         `${backgroundX}px`
     );
 
-
     document.documentElement.style.setProperty(
         "--mouse-y",
         `${backgroundY}px`
     );
 
-
-    requestAnimationFrame(
-        backgroundLoop
-    );
-
+    requestAnimationFrame(backgroundLoop);
 }
-
 
 backgroundLoop();
 
 
 /* ========================================
-SMOOTH 3D TILT
+   SMOOTH 3D TILT
 ======================================== */
 
-/*
-    Lower smoothing value = slower / smoother movement.
+const tiltElements = document.querySelectorAll(
+    ".tilt-frame, .gallery-item, .folder-card, .pricing-card, .tool-card, .social-card"
+);
 
-    The cards now gently follow the mouse instead
-    of snapping toward it.
+const tiltStates = new Map();
 
-    Includes:
-    - Design Capabilities
-    - Pricing
-    - Tools
-    - Socials
-    - Gallery items
-*/
+tiltElements.forEach((element) => {
 
-const tiltElements =
-    document.querySelectorAll(
-        ".tilt-frame, .gallery-item"
-    );
+    tiltStates.set(element, {
+        currentX: 0,
+        currentY: 0,
+        targetX: 0,
+        targetY: 0,
+        hovering: false
+    });
 
+    element.addEventListener("pointermove", (event) => {
 
-tiltElements.forEach(
-    (element) => {
-
-        let targetRotateX = 0;
-        let targetRotateY = 0;
-
-        let currentRotateX = 0;
-        let currentRotateY = 0;
-
-        let targetLift = 0;
-        let currentLift = 0;
-
-        let hovering = false;
-
-
-        element.addEventListener(
-            "pointerenter",
-            () => {
-
-                hovering = true;
-
-            }
-        );
-
-
-        element.addEventListener(
-            "pointermove",
-            (event) => {
-
-                /*
-                    Don't let buttons/links affect the tilt
-                    calculation.
-                */
-
-                if (
-                    event.target.closest("button") ||
-                    event.target.closest("a")
-                ) {
-                    return;
-                }
-
-
-                const rect =
-                    element.getBoundingClientRect();
-
-
-                if (
-                    rect.width <= 0 ||
-                    rect.height <= 0
-                ) {
-                    return;
-                }
-
-
-                const x =
-                    event.clientX -
-                    rect.left;
-
-
-                const y =
-                    event.clientY -
-                    rect.top;
-
-
-                const percentX =
-                    (x / rect.width) -
-                    0.5;
-
-
-                const percentY =
-                    (y / rect.height) -
-                    0.5;
-
-
-                /*
-                    Very gentle tilt.
-
-                    Maximum:
-                    4 degrees
-
-                    This keeps the effect subtle
-                    rather than making the cards feel
-                    unstable.
-                */
-
-                targetRotateY =
-                    percentX * 4;
-
-                targetRotateX =
-                    percentY * -4;
-
-
-                targetLift = -2;
-
-            }
-        );
-
-
-        element.addEventListener(
-            "pointerleave",
-            () => {
-
-                hovering = false;
-
-                targetRotateX = 0;
-                targetRotateY = 0;
-                targetLift = 0;
-
-            }
-        );
-
-
-        function tiltLoop() {
-
-            /*
-                Slow interpolation prevents snapping.
-            */
-
-            currentRotateX +=
-                (
-                    targetRotateX -
-                    currentRotateX
-                ) * 0.045;
-
-
-            currentRotateY +=
-                (
-                    targetRotateY -
-                    currentRotateY
-                ) * 0.045;
-
-
-            currentLift +=
-                (
-                    targetLift -
-                    currentLift
-                ) * 0.055;
-
-
-            const active =
-                hovering ||
-                Math.abs(currentRotateX) > 0.01 ||
-                Math.abs(currentRotateY) > 0.01 ||
-                Math.abs(currentLift) > 0.01;
-
-
-            if (active) {
-
-                element.style.transform =
-                    `perspective(1000px)
-                     rotateX(${currentRotateX}deg)
-                     rotateY(${currentRotateY}deg)
-                     translateY(${currentLift}px)`;
-
-            } else {
-
-                element.style.transform = "";
-
-            }
-
-
-            requestAnimationFrame(
-                tiltLoop
-            );
-
+        if (
+            event.target.closest("button") ||
+            event.target.closest("a")
+        ) {
+            return;
         }
 
+        const state = tiltStates.get(element);
 
-        tiltLoop();
+        if (!state) {
+            return;
+        }
 
-    }
-);
+        const rect =
+            element.getBoundingClientRect();
+
+        const x =
+            (event.clientX - rect.left) /
+            rect.width;
+
+        const y =
+            (event.clientY - rect.top) /
+            rect.height;
+
+        state.targetY =
+            (x - 0.5) * 7;
+
+        state.targetX =
+            (y - 0.5) * -7;
+
+        state.hovering = true;
+
+    });
+
+    element.addEventListener("pointerenter", () => {
+
+        const state = tiltStates.get(element);
+
+        if (state) {
+            state.hovering = true;
+        }
+
+    });
+
+    element.addEventListener("pointerleave", () => {
+
+        const state = tiltStates.get(element);
+
+        if (!state) {
+            return;
+        }
+
+        state.targetX = 0;
+        state.targetY = 0;
+        state.hovering = false;
+
+    });
+
+});
+
+
+function smoothTiltLoop() {
+
+    tiltStates.forEach((state, element) => {
+
+        /*
+            Smooth interpolation.
+
+            This is deliberately low so the tilt
+            follows the mouse without snapping.
+        */
+
+        state.currentX +=
+            (state.targetX - state.currentX) * 0.075;
+
+        state.currentY +=
+            (state.targetY - state.currentY) * 0.075;
+
+        const settling =
+            Math.abs(state.currentX) < 0.01 &&
+            Math.abs(state.currentY) < 0.01 &&
+            !state.hovering;
+
+        if (settling) {
+
+            state.currentX = 0;
+            state.currentY = 0;
+
+            element.style.transform = "";
+
+            return;
+        }
+
+        element.style.transform =
+            `perspective(900px)
+             rotateX(${state.currentX}deg)
+             rotateY(${state.currentY}deg)
+             translateY(${state.hovering ? -4 : 0}px)`;
+
+    });
+
+    requestAnimationFrame(smoothTiltLoop);
+}
+
+smoothTiltLoop();
 
 
 /* ========================================
-GALLERY DUPLICATION
+   GALLERY DUPLICATION
 ======================================== */
 
 const originalItems =
     Array.from(
-        gallery.querySelectorAll(
-            ".gallery-item"
-        )
+        gallery.querySelectorAll(".gallery-item")
     );
 
+originalItems.forEach((item) => {
 
-originalItems.forEach(
-    (item) => {
+    gallery.appendChild(
+        item.cloneNode(true)
+    );
 
-        gallery.appendChild(
-            item.cloneNode(true)
-        );
-
-    }
-);
-
-
-/* ========================================
-GALLERY VARIABLES
-======================================== */
+});
 
 let gallerySetWidth = 0;
-
 let galleryPosition = 0;
 
-let galleryLastTime =
-    performance.now();
+let galleryLastTime = performance.now();
 
 const AUTO_SPEED = 18;
 
 
 /* ========================================
-GALLERY MEASUREMENT
+   GALLERY DRAG
 ======================================== */
 
+let isDragging = false;
+let pointerId = null;
+
+let dragStartX = 0;
+let dragStartPosition = 0;
+
+let lastPointerX = 0;
+let lastPointerTime = 0;
+
+let dragVelocity = 0;
+let galleryMomentum = 0;
+
+let pressedItem = null;
+let hasDragged = false;
+
+const MOMENTUM_MULTIPLIER = 4.6;
+const MOMENTUM_FRICTION = .972;
+const MAX_MOMENTUM = 6500;
+
+
 function measureGallery() {
-
-    if (!gallery) {
-        return;
-    }
-
 
     gallerySetWidth =
         gallery.scrollWidth / 2;
 
-
     normalizeGallery();
-
     renderGallery();
 
 }
@@ -434,25 +285,16 @@ function normalizeGallery() {
         return;
     }
 
-
     while (
-        galleryPosition <=
-        -gallerySetWidth
+        galleryPosition <= -gallerySetWidth
     ) {
-
-        galleryPosition +=
-            gallerySetWidth;
-
+        galleryPosition += gallerySetWidth;
     }
-
 
     while (
         galleryPosition > 0
     ) {
-
-        galleryPosition -=
-            gallerySetWidth;
-
+        galleryPosition -= gallerySetWidth;
     }
 
 }
@@ -460,17 +302,8 @@ function normalizeGallery() {
 
 function renderGallery() {
 
-    if (!gallery) {
-        return;
-    }
-
-
     gallery.style.transform =
-        `translate3d(
-            ${galleryPosition}px,
-            0,
-            0
-        )`;
+        `translate3d(${galleryPosition}px,0,0)`;
 
 }
 
@@ -480,7 +313,6 @@ window.addEventListener(
     measureGallery
 );
 
-
 window.addEventListener(
     "resize",
     measureGallery
@@ -488,36 +320,31 @@ window.addEventListener(
 
 
 /* ========================================
-GALLERY ANIMATION
+   GALLERY ANIMATION
 ======================================== */
 
 function galleryLoop(currentTime) {
 
     const delta =
         Math.min(
-            currentTime -
-            galleryLastTime,
+            currentTime - galleryLastTime,
             50
         );
 
-
-    galleryLastTime =
-        currentTime;
-
+    galleryLastTime = currentTime;
 
     if (
         !isDragging &&
-        !lightbox?.classList.contains("active")
+        !lightbox.classList.contains("active")
     ) {
 
         if (
-            Math.abs(galleryMomentum) > 0.15
+            Math.abs(galleryMomentum) > .15
         ) {
 
             galleryPosition +=
                 galleryMomentum *
                 (delta / 1000);
-
 
             galleryMomentum *=
                 Math.pow(
@@ -529,7 +356,6 @@ function galleryLoop(currentTime) {
 
             galleryMomentum = 0;
 
-
             galleryPosition -=
                 AUTO_SPEED *
                 (delta / 1000);
@@ -538,58 +364,17 @@ function galleryLoop(currentTime) {
 
     }
 
-
     normalizeGallery();
-
     renderGallery();
 
-
-    requestAnimationFrame(
-        galleryLoop
-    );
-
+    requestAnimationFrame(galleryLoop);
 }
 
-
-requestAnimationFrame(
-    galleryLoop
-);
+requestAnimationFrame(galleryLoop);
 
 
 /* ========================================
-GALLERY DRAG
-======================================== */
-
-let isDragging = false;
-
-let pointerId = null;
-
-let dragStartX = 0;
-
-let dragStartPosition = 0;
-
-let lastPointerX = 0;
-
-let lastPointerTime = 0;
-
-let dragVelocity = 0;
-
-let galleryMomentum = 0;
-
-let pressedItem = null;
-
-let hasDragged = false;
-
-
-const MOMENTUM_MULTIPLIER = 4.6;
-
-const MOMENTUM_FRICTION = 0.972;
-
-const MAX_MOMENTUM = 6500;
-
-
-/* ========================================
-GALLERY POINTER DOWN
+   GALLERY POINTER DOWN
 ======================================== */
 
 galleryWrapper.addEventListener(
@@ -602,15 +387,6 @@ galleryWrapper.addEventListener(
             return;
         }
 
-
-        if (
-            lightbox &&
-            lightbox.classList.contains("active")
-        ) {
-            return;
-        }
-
-
         isDragging = true;
 
         pointerId =
@@ -620,36 +396,28 @@ galleryWrapper.addEventListener(
 
         galleryMomentum = 0;
 
-
         dragStartX =
             event.clientX;
-
 
         dragStartPosition =
             galleryPosition;
 
-
         lastPointerX =
             event.clientX;
-
 
         lastPointerTime =
             performance.now();
 
-
         dragVelocity = 0;
-
 
         galleryWrapper.classList.add(
             "dragging"
         );
 
-
         pressedItem =
             event.target.closest(
                 ".gallery-item"
             );
-
 
         if (pressedItem) {
 
@@ -659,11 +427,9 @@ galleryWrapper.addEventListener(
 
         }
 
-
         galleryWrapper.setPointerCapture(
             event.pointerId
         );
-
 
         event.preventDefault();
 
@@ -672,7 +438,7 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-GALLERY POINTER MOVE
+   GALLERY POINTER MOVE
 ======================================== */
 
 galleryWrapper.addEventListener(
@@ -686,24 +452,17 @@ galleryWrapper.addEventListener(
             return;
         }
 
-
         const now =
             performance.now();
 
-
         const distance =
-            event.clientX -
-            dragStartX;
-
+            event.clientX - dragStartX;
 
         if (
             Math.abs(distance) > 7
         ) {
-
             hasDragged = true;
-
         }
-
 
         if (
             hasDragged &&
@@ -716,25 +475,16 @@ galleryWrapper.addEventListener(
 
         }
 
-
         galleryPosition =
-            dragStartPosition +
-            distance;
-
+            dragStartPosition + distance;
 
         normalizeGallery();
-
         renderGallery();
 
-
         const elapsed =
-            now -
-            lastPointerTime;
+            now - lastPointerTime;
 
-
-        if (
-            elapsed > 0
-        ) {
+        if (elapsed > 0) {
 
             dragVelocity =
                 (
@@ -745,10 +495,8 @@ galleryWrapper.addEventListener(
 
         }
 
-
         lastPointerX =
             event.clientX;
-
 
         lastPointerTime =
             now;
@@ -758,7 +506,7 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-GALLERY RELEASE
+   GALLERY RELEASE
 ======================================== */
 
 function releaseGallery(event) {
@@ -770,14 +518,11 @@ function releaseGallery(event) {
         return;
     }
 
-
     isDragging = false;
-
 
     galleryWrapper.classList.remove(
         "dragging"
     );
-
 
     if (
         pressedItem &&
@@ -788,19 +533,15 @@ function releaseGallery(event) {
             "pressing"
         );
 
-
         pressedItem.classList.remove(
             "clicked"
         );
 
-
         void pressedItem.offsetWidth;
-
 
         pressedItem.classList.add(
             "clicked"
         );
-
 
         openProject(
             pressedItem
@@ -808,13 +549,11 @@ function releaseGallery(event) {
 
     }
 
-
     if (hasDragged) {
 
         galleryMomentum =
             dragVelocity *
             MOMENTUM_MULTIPLIER;
-
 
         galleryMomentum =
             Math.max(
@@ -827,7 +566,6 @@ function releaseGallery(event) {
 
     }
 
-
     if (pressedItem) {
 
         pressedItem.classList.remove(
@@ -836,11 +574,8 @@ function releaseGallery(event) {
 
     }
 
-
     pressedItem = null;
-
     pointerId = null;
-
     dragVelocity = 0;
 
 }
@@ -851,7 +586,6 @@ galleryWrapper.addEventListener(
     releaseGallery
 );
 
-
 galleryWrapper.addEventListener(
     "pointercancel",
     releaseGallery
@@ -859,93 +593,42 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-PAGE WHEEL SYSTEM
+   CUSTOM PAGE WHEEL
+   NO DEFAULT WINDOWS/BROWSER SCROLL
 ======================================== */
 
-/*
-    The browser's normal wheel behaviour is disabled.
-
-    Every mouse wheel event is routed through the
-    smooth scrolling system below.
-
-    This prevents the native Windows/browser wheel
-    movement from fighting the custom scrolling.
-*/
-
 let wheelVelocity = 0;
-
-let wheelTarget =
-    window.scrollY;
+let wheelTarget = window.scrollY;
 
 let wheelAnimation = false;
-
-let lastWheelTime =
-    performance.now();
-
-
-const WHEEL_MULTIPLIER =
-    window.innerWidth < 700
-        ? 1.15
-        : 1.25;
-
-
-const WHEEL_FRICTION = 0.88;
-
-const WHEEL_SMOOTHING = 0.075;
-
-const MAX_WHEEL_VELOCITY = 1800;
 
 
 function smoothWheelScroll(delta) {
 
-    if (
-        lightbox &&
-        lightbox.classList.contains("active")
-    ) {
-        return;
-    }
-
-
-    /*
-        If the user changes direction,
-        don't allow old momentum to fight it.
-    */
-
-    if (
-        Math.sign(delta) !==
-        Math.sign(wheelVelocity) &&
-        Math.abs(delta) > 1
-    ) {
-
-        wheelVelocity *= 0.35;
-
-    }
-
+    const multiplier =
+        window.innerWidth < 700
+            ? 1.05
+            : 1.15;
 
     wheelVelocity +=
-        delta *
-        WHEEL_MULTIPLIER;
-
+        delta * multiplier;
 
     wheelVelocity =
         Math.max(
-            -MAX_WHEEL_VELOCITY,
+            -2200,
             Math.min(
-                MAX_WHEEL_VELOCITY,
+                2200,
                 wheelVelocity
             )
         );
 
+    wheelTarget =
+        window.scrollY +
+        wheelVelocity;
 
     const maxScroll =
         document.documentElement.scrollHeight -
         window.innerHeight;
-
-
-    wheelTarget +=
-        wheelVelocity *
-        0.22;
-
 
     wheelTarget =
         Math.max(
@@ -955,7 +638,6 @@ function smoothWheelScroll(delta) {
                 wheelTarget
             )
         );
-
 
     if (!wheelAnimation) {
 
@@ -970,68 +652,25 @@ function smoothWheelScroll(delta) {
 }
 
 
-function wheelLoop(time) {
-
-    if (
-        lightbox &&
-        lightbox.classList.contains("active")
-    ) {
-
-        wheelVelocity = 0;
-
-        wheelTarget =
-            window.scrollY;
-
-        wheelAnimation = false;
-
-        return;
-
-    }
-
+function wheelLoop() {
 
     const current =
         window.scrollY;
 
-
     const distance =
-        wheelTarget -
-        current;
-
-
-    /*
-        Smoothly approach the target.
-
-        This is intentionally low so the page
-        does not feel snappy.
-    */
-
-    const movement =
-        distance *
-        WHEEL_SMOOTHING;
-
+        wheelTarget - current;
 
     window.scrollTo(
         0,
-        current + movement
+        current + distance * 0.085
     );
 
+    wheelVelocity *= 0.93;
 
-    /*
-        Gradually remove momentum.
-    */
-
-    wheelVelocity *=
-        WHEEL_FRICTION;
-
-
-    const stillMoving =
+    if (
         Math.abs(distance) > 0.35 ||
-        Math.abs(wheelVelocity) > 0.35;
-
-
-    if (stillMoving) {
-
-        wheelAnimation = true;
+        Math.abs(wheelVelocity) > 0.35
+    ) {
 
         requestAnimationFrame(
             wheelLoop
@@ -1044,9 +683,7 @@ function wheelLoop(time) {
             wheelTarget
         );
 
-
         wheelVelocity = 0;
-
         wheelAnimation = false;
 
     }
@@ -1055,35 +692,24 @@ function wheelLoop(time) {
 
 
 /*
-    GLOBAL wheel handler.
+    Intercept wheel events globally.
 
-    This replaces the browser's default wheel
-    scrolling everywhere on the page.
+    This prevents the browser/Windows default
+    scroll behavior from fighting the custom
+    momentum system.
 */
 
-document.addEventListener(
+window.addEventListener(
     "wheel",
     (event) => {
 
         if (
-            lightbox &&
             lightbox.classList.contains("active")
         ) {
-
-            /*
-                Do absolutely nothing while the
-                lightbox is open.
-            */
-
-            event.preventDefault();
-
             return;
-
         }
 
-
         event.preventDefault();
-
 
         smoothWheelScroll(
             event.deltaY
@@ -1097,97 +723,33 @@ document.addEventListener(
 
 
 /* ========================================
-LIGHTBOX
+   LIGHTBOX
 ======================================== */
 
 let currentProject = null;
 
-let magnifying = false;
-
-
-/*
-    Completely reset the magnifier state.
-*/
-
-function resetMagnifier() {
-
-    magnifying = false;
-
-
-    if (lightboxMagnifier) {
-
-        lightboxMagnifier.classList.remove(
-            "active"
-        );
-
-    }
-
-
-    if (lightboxImage) {
-
-        lightboxImage.style.backgroundSize =
-            "";
-
-        lightboxImage.style.backgroundPosition =
-            "";
-
-    }
-
-}
-
 
 function openProject(item) {
 
-    if (
-        !lightbox ||
-        !lightboxImage
-    ) {
-        return;
-    }
-
-
-    currentProject =
-        item;
-
-
-    /*
-        Stop every previous wheel operation
-        before opening the lightbox.
-    */
-
-    wheelVelocity = 0;
-
-    wheelTarget =
-        window.scrollY;
-
-    wheelAnimation = false;
-
+    currentProject = item;
 
     resetMagnifier();
 
-
     lightboxImage.style.background =
-        getComputedStyle(
-            item
-        ).background;
-
+        getComputedStyle(item).background;
 
     lightboxImage.style.backgroundSize =
-        "";
+        "cover";
 
     lightboxImage.style.backgroundPosition =
-        "";
+        "center";
 
+    lightboxImage.style.backgroundRepeat =
+        "no-repeat";
 
     lightbox.classList.add(
         "active"
     );
-
-
-    /*
-        Lock page scrolling while the lightbox
-        is open.
-    */
 
     document.body.style.overflow =
         "hidden";
@@ -1197,72 +759,40 @@ function openProject(item) {
 
 function closeLightbox() {
 
-    /*
-        Reset everything before restoring
-        normal page scrolling.
-    */
-
     resetMagnifier();
 
+    lightbox.classList.remove(
+        "active"
+    );
 
-    if (lightboxImage) {
+    lightboxImage.style.backgroundSize =
+        "cover";
 
-        lightboxImage.style.background =
-            "";
+    lightboxImage.style.backgroundPosition =
+        "center";
 
-    }
-
-
-    if (lightbox) {
-
-        lightbox.classList.remove(
-            "active"
-        );
-
-    }
-
+    lightboxImage.style.backgroundRepeat =
+        "no-repeat";
 
     document.body.style.overflow =
         "";
 
-
-    currentProject =
-        null;
-
-
     /*
-        IMPORTANT:
-
-        Restore wheel state to the exact current
-        page position. This prevents the page from
-        suddenly moving after magnification.
+        Make sure the custom wheel system
+        starts from the actual position after
+        leaving the lightbox.
     */
-
-    wheelVelocity = 0;
 
     wheelTarget =
         window.scrollY;
 
+    wheelVelocity = 0;
     wheelAnimation = false;
 
-    lastWheelTime =
-        performance.now();
-
-
-    /*
-        Make sure the gallery cannot accidentally
-        inherit old movement from before the
-        lightbox was opened.
-    */
-
-    galleryMomentum = 0;
+    currentProject = null;
 
 }
 
-
-/* ========================================
-LIGHTBOX BACKGROUND CLICK
-======================================== */
 
 lightbox.addEventListener(
     "click",
@@ -1271,30 +801,30 @@ lightbox.addEventListener(
         if (
             event.target === lightbox
         ) {
-
             closeLightbox();
-
         }
 
     }
 );
 
-
-/* ========================================
-ESCAPE CLOSE
-======================================== */
 
 document.addEventListener(
     "keydown",
     (event) => {
 
         if (
-            event.key === "Escape" &&
-            lightbox &&
-            lightbox.classList.contains("active")
+            event.key === "Escape"
         ) {
 
-            closeLightbox();
+            if (
+                lightbox.classList.contains(
+                    "active"
+                )
+            ) {
+
+                closeLightbox();
+
+            }
 
         }
 
@@ -1303,43 +833,51 @@ document.addEventListener(
 
 
 /* ========================================
-LIGHTBOX MAGNIFIER
+   LIGHTBOX MAGNIFIER
 ======================================== */
+
+let magnifying = false;
+
+
+function resetMagnifier() {
+
+    magnifying = false;
+
+    lightboxMagnifier.classList.remove(
+        "active"
+    );
+
+    lightboxImage.style.backgroundSize =
+        "cover";
+
+    lightboxImage.style.backgroundPosition =
+        "center";
+
+    lightboxImage.style.backgroundRepeat =
+        "no-repeat";
+
+}
+
 
 lightboxMagnifier.addEventListener(
     "click",
-    (event) => {
-
-        event.stopPropagation();
-
+    () => {
 
         magnifying =
             !magnifying;
-
 
         lightboxMagnifier.classList.toggle(
             "active",
             magnifying
         );
 
-
         if (!magnifying) {
-
-            lightboxImage.style.backgroundSize =
-                "";
-
-            lightboxImage.style.backgroundPosition =
-                "";
-
+            resetMagnifier();
         }
 
     }
 );
 
-
-/* ========================================
-LIGHTBOX MAGNIFICATION
-======================================== */
 
 lightboxImage.addEventListener(
     "pointermove",
@@ -1349,45 +887,29 @@ lightboxImage.addEventListener(
             return;
         }
 
-
         const rect =
             lightboxImage.getBoundingClientRect();
 
-
-        if (
-            rect.width <= 0 ||
-            rect.height <= 0
-        ) {
-            return;
-        }
-
-
         const x =
             (
-                (
-                    event.clientX -
-                    rect.left
-                ) /
+                (event.clientX - rect.left) /
                 rect.width
             ) * 100;
 
-
         const y =
             (
-                (
-                    event.clientY -
-                    rect.top
-                ) /
+                (event.clientY - rect.top) /
                 rect.height
             ) * 100;
-
 
         lightboxImage.style.backgroundSize =
             "175% 175%";
 
-
         lightboxImage.style.backgroundPosition =
             `${x}% ${y}%`;
+
+        lightboxImage.style.backgroundRepeat =
+            "no-repeat";
 
     }
 );
@@ -1401,19 +923,15 @@ lightboxImage.addEventListener(
             return;
         }
 
-
-        lightboxImage.style.backgroundSize =
-            "";
-
         lightboxImage.style.backgroundPosition =
-            "";
+            "center";
 
     }
 );
 
 
 /* ========================================
-SECTION SCROLL
+   SECTION SCROLL
 ======================================== */
 
 let scrollAnimation = null;
@@ -1425,46 +943,28 @@ function smoothScrollTo(element) {
         return;
     }
 
-
-    /*
-        Stop wheel momentum before navigation.
-        Otherwise the wheel system can fight the
-        navigation animation.
-    */
-
-    wheelVelocity = 0;
-
-    wheelAnimation = false;
-
-
     const start =
         window.scrollY;
-
 
     const target =
         element.getBoundingClientRect().top +
         window.scrollY -
         65;
 
-
     const distance =
-        target -
-        start;
-
+        target - start;
 
     const duration =
         Math.min(
             1250,
             Math.max(
                 750,
-                Math.abs(distance) * 0.62
+                Math.abs(distance) * .62
             )
         );
 
-
     const startTime =
         performance.now();
-
 
     if (scrollAnimation) {
 
@@ -1474,19 +974,24 @@ function smoothScrollTo(element) {
 
     }
 
+    /*
+        Stop wheel momentum when using
+        navigation buttons.
+    */
+
+    wheelVelocity = 0;
+    wheelTarget = target;
+    wheelAnimation = false;
+
 
     function animate(time) {
 
         const progress =
             Math.min(
                 1,
-                (
-                    time -
-                    startTime
-                ) /
+                (time - startTime) /
                 duration
             );
-
 
         const eased =
             1 -
@@ -1495,18 +1000,13 @@ function smoothScrollTo(element) {
                 5
             );
 
-
         window.scrollTo(
             0,
             start +
-            distance *
-            eased
+            distance * eased
         );
 
-
-        if (
-            progress < 1
-        ) {
+        if (progress < 1) {
 
             scrollAnimation =
                 requestAnimationFrame(
@@ -1515,26 +1015,14 @@ function smoothScrollTo(element) {
 
         } else {
 
-            scrollAnimation =
-                null;
-
-
-            /*
-                Sync custom wheel position with
-                the final navigation position.
-            */
+            scrollAnimation = null;
 
             wheelTarget =
                 window.scrollY;
 
-            wheelVelocity = 0;
-
-            wheelAnimation = false;
-
         }
 
     }
-
 
     scrollAnimation =
         requestAnimationFrame(
@@ -1545,7 +1033,7 @@ function smoothScrollTo(element) {
 
 
 /* ========================================
-NAVIGATION
+   NAVIGATION
 ======================================== */
 
 navItems.forEach(
@@ -1560,7 +1048,6 @@ navItems.forEach(
                         item.dataset.target
                     );
 
-
                 smoothScrollTo(
                     target
                 );
@@ -1572,60 +1059,44 @@ navItems.forEach(
 );
 
 
-/* ========================================
-HERO BUTTONS
-======================================== */
+pricingButton.addEventListener(
+    "click",
+    () => {
 
-if (pricingButton) {
+        smoothScrollTo(
+            pricingSection
+        );
 
-    pricingButton.addEventListener(
-        "click",
-        () => {
-
-            smoothScrollTo(
-                pricingSection
-            );
-
-        }
-    );
-
-}
+    }
+);
 
 
-if (socialsHeroButton) {
+socialsHeroButton.addEventListener(
+    "click",
+    () => {
 
-    socialsHeroButton.addEventListener(
-        "click",
-        () => {
+        smoothScrollTo(
+            socialsSection
+        );
 
-            smoothScrollTo(
-                socialsSection
-            );
-
-        }
-    );
-
-}
+    }
+);
 
 
-if (contactButton) {
+contactButton.addEventListener(
+    "click",
+    () => {
 
-    contactButton.addEventListener(
-        "click",
-        () => {
+        smoothScrollTo(
+            socialsSection
+        );
 
-            smoothScrollTo(
-                socialsSection
-            );
-
-        }
-    );
-
-}
+    }
+);
 
 
 /* ========================================
-ACTIVE NAV
+   ACTIVE NAV
 ======================================== */
 
 const sectionObserver =
@@ -1641,7 +1112,6 @@ const sectionObserver =
 
                         const id =
                             entry.target.dataset.section;
-
 
                         navItems.forEach(
                             (item) => {
@@ -1661,9 +1131,7 @@ const sectionObserver =
 
         },
         {
-            rootMargin:
-                "-35% 0px -55% 0px",
-
+            rootMargin: "-35% 0px -55% 0px",
             threshold: 0
         }
     );
@@ -1681,7 +1149,7 @@ sections.forEach(
 
 
 /* ========================================
-SCROLL REVEALS
+   SCROLL REVEALS
 ======================================== */
 
 const revealObserver =
@@ -1699,7 +1167,6 @@ const revealObserver =
                             "visible"
                         );
 
-
                         revealObserver.unobserve(
                             entry.target
                         );
@@ -1711,10 +1178,8 @@ const revealObserver =
 
         },
         {
-            threshold: 0.08,
-
-            rootMargin:
-                "0px 0px -80px 0px"
+            threshold: .08,
+            rootMargin: "0px 0px -80px 0px"
         }
     );
 
@@ -1731,7 +1196,7 @@ revealSections.forEach(
 
 
 /* ========================================
-SCROLL PROGRESS
+   SCROLL PROGRESS
 ======================================== */
 
 function updateScrollProgress() {
@@ -1739,27 +1204,17 @@ function updateScrollProgress() {
     const scrollTop =
         window.scrollY;
 
-
     const scrollHeight =
         document.documentElement.scrollHeight -
         window.innerHeight;
-
 
     const progress =
         scrollHeight > 0
             ? scrollTop / scrollHeight
             : 0;
 
-
-    if (scrollProgress) {
-
-        scrollProgress.style.height =
-            `${Math.max(
-                35,
-                progress * 100
-            )}%`;
-
-    }
+    scrollProgress.style.height =
+        `${Math.max(35, progress * 100)}%`;
 
 }
 
@@ -1772,18 +1227,16 @@ window.addEventListener(
     }
 );
 
-
 window.addEventListener(
     "resize",
     updateScrollProgress
 );
 
-
 updateScrollProgress();
 
 
 /* ========================================
-FAQ
+   FAQ
 ======================================== */
 
 const faqItems =
@@ -1802,7 +1255,6 @@ faqItems.forEach(
                 if (!item.open) {
                     return;
                 }
-
 
                 faqItems.forEach(
                     (other) => {
@@ -1828,7 +1280,7 @@ faqItems.forEach(
 
 
 /* ========================================
-PREVENT IMAGE DRAGGING
+   PREVENT IMAGE DRAGGING
 ======================================== */
 
 gallery.addEventListener(
@@ -1842,7 +1294,7 @@ gallery.addEventListener(
 
 
 /* ========================================
-INITIALIZE
+   INITIALIZE
 ======================================== */
 
 window.addEventListener(
@@ -1853,27 +1305,11 @@ window.addEventListener(
 
         updateScrollProgress();
 
-
-        /*
-            Synchronize custom wheel scrolling
-            with the actual initial position.
-        */
-
-        wheelTarget =
-            window.scrollY;
-
-        wheelVelocity = 0;
-
-        wheelAnimation = false;
-
-
         setTimeout(
             () => {
 
                 document
-                    .querySelector(
-                        ".hero"
-                    )
+                    .querySelector(".hero")
                     ?.classList.add(
                         "visible"
                     );
