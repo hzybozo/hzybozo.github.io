@@ -26,7 +26,7 @@
     </main>
 
 
-    <!-- IMAGE STRIP -->
+    <!-- PROJECT GALLERY -->
     <section class="gallery-section">
 
         <div class="gallery-header">
@@ -40,7 +40,8 @@
             </span>
         </div>
 
-        <div class="gallery-wrapper">
+
+        <div class="gallery-wrapper" id="galleryWrapper">
 
             <div class="gallery" id="gallery">
 
@@ -99,17 +100,25 @@
     </section>
 
 
-    <!-- FULLSCREEN IMAGE VIEWER -->
+    <!-- LIGHTBOX -->
     <div class="lightbox" id="lightbox">
 
-        <button class="lightbox-close" id="lightboxClose">
+        <button
+            class="lightbox-close"
+            id="lightboxClose"
+            aria-label="Close"
+        >
             ×
         </button>
 
         <div class="lightbox-content" id="lightboxContent">
+
             <div class="lightbox-image" id="lightboxImage">
+
                 <span id="lightboxNumber"></span>
+
             </div>
+
         </div>
 
     </div>
