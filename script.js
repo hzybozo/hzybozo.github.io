@@ -3,75 +3,49 @@
 ======================================== */
 
 const galleryWrapper =
-    document.getElementById(
-        "galleryWrapper"
-    );
+    document.getElementById("galleryWrapper");
 
 const gallery =
-    document.getElementById(
-        "gallery"
-    );
+    document.getElementById("gallery");
 
 const pricingButton =
-    document.getElementById(
-        "pricingButton"
-    );
+    document.getElementById("pricingButton");
 
 const pricingSection =
-    document.getElementById(
-        "pricing"
-    );
+    document.getElementById("pricing");
 
 const lightbox =
-    document.getElementById(
-        "lightbox"
-    );
+    document.getElementById("lightbox");
 
 const lightboxImage =
-    document.getElementById(
-        "lightboxImage"
-    );
+    document.getElementById("lightboxImage");
 
 const lightboxClose =
-    document.getElementById(
-        "lightboxClose"
-    );
+    document.getElementById("lightboxClose");
+
+const navItems =
+    document.querySelectorAll(".nav-item");
 
 
 /* ========================================
-   GALLERY SETUP
+   GALLERY
 ======================================== */
 
 const originalItems =
     Array.from(
-        gallery.querySelectorAll(
-            ".gallery-item"
-        )
+        gallery.querySelectorAll(".gallery-item")
     );
 
 
-/*
-    Duplicate the cards so the gallery
-    can continuously loop.
-*/
+originalItems.forEach((item) => {
 
-originalItems.forEach(
-    (item) => {
+    const clone =
+        item.cloneNode(true);
 
-        const clone =
-            item.cloneNode(true);
+    gallery.appendChild(clone);
 
-        gallery.appendChild(
-            clone
-        );
+});
 
-    }
-);
-
-
-/* ========================================
-   GALLERY STATE
-======================================== */
 
 let singleSetWidth = 0;
 
@@ -82,16 +56,14 @@ let lastTime =
 
 
 /*
-    Natural automatic movement.
-
-    Pixels per second.
+    Automatic movement.
 */
 
-const AUTO_SPEED = 28;
+const AUTO_SPEED = 25;
 
 
 /* ========================================
-   DRAG STATE
+   DRAG / MOMENTUM
 ======================================== */
 
 let isDragging = false;
@@ -108,57 +80,28 @@ let lastPointerTime = 0;
 
 let dragVelocity = 0;
 
+let momentum = 0;
+
 let hasDragged = false;
 
 let pressedItem = null;
 
 
-/* ========================================
-   MOMENTUM
-======================================== */
+const MOMENTUM_MULTIPLIER = 3.2;
 
-/*
-    Current momentum.
+const MOMENTUM_FRICTION = 0.982;
 
-    Positive / negative determines
-    direction.
-*/
-
-let momentum = 0;
-
-
-/*
-    MUCH stronger momentum than before.
-*/
-
-const MOMENTUM_MULTIPLIER = 2.2;
-
-
-/*
-    How quickly momentum fades.
-
-    0.975 = long, smooth glide.
-*/
-
-const MOMENTUM_FRICTION = 0.975;
-
-
-/*
-    Maximum possible momentum.
-*/
-
-const MAX_MOMENTUM = 4000;
+const MAX_MOMENTUM = 5000;
 
 
 /* ========================================
-   MEASURE GALLERY
+   MEASURE
 ======================================== */
 
 function measureGallery() {
 
     singleSetWidth =
         gallery.scrollWidth / 2;
-
 
     normalizePosition();
 
@@ -172,7 +115,6 @@ window.addEventListener(
     measureGallery
 );
 
-
 window.addEventListener(
     "resize",
     measureGallery
@@ -180,17 +122,13 @@ window.addEventListener(
 
 
 /* ========================================
-   NORMALIZE INFINITE LOOP
+   LOOP POSITION
 ======================================== */
 
 function normalizePosition() {
 
-    if (
-        singleSetWidth <= 0
-    ) {
-
+    if (!singleSetWidth) {
         return;
-
     }
 
 
@@ -224,24 +162,22 @@ function normalizePosition() {
 function renderGallery() {
 
     gallery.style.transform =
-        `translate3d(${position}px, 0, 0)`;
+        `translate3d(${position}px,0,0)`;
 
 }
 
 
 /* ========================================
-   GALLERY ANIMATION
+   ANIMATION
 ======================================== */
 
 function animationLoop(
     currentTime
 ) {
 
-    const deltaTime =
+    const delta =
         Math.min(
-            currentTime -
-            lastTime,
-
+            currentTime - lastTime,
             50
         );
 
@@ -250,58 +186,36 @@ function animationLoop(
         currentTime;
 
 
-    /*
-        Don't move the gallery automatically
-        while the user is dragging.
-    */
-
     if (
         !isDragging &&
-        !lightbox.classList.contains(
-            "active"
-        )
+        !lightbox.classList.contains("active")
     ) {
 
-        /*
-            Momentum first.
-        */
-
         if (
-            Math.abs(momentum) > 0.1
+            Math.abs(momentum) > .15
         ) {
 
             position +=
                 momentum *
                 (
-                    deltaTime /
-                    1000
+                    delta / 1000
                 );
 
-
-            /*
-                Smoothly decay momentum.
-            */
 
             momentum *=
                 Math.pow(
                     MOMENTUM_FRICTION,
-                    deltaTime / 16.67
+                    delta / 16.67
                 );
 
         } else {
-
-            /*
-                Once momentum is gone,
-                return to natural scrolling.
-            */
 
             momentum = 0;
 
             position -=
                 AUTO_SPEED *
                 (
-                    deltaTime /
-                    1000
+                    delta / 1000
                 );
 
         }
@@ -312,7 +226,6 @@ function animationLoop(
     normalizePosition();
 
     renderGallery();
-
 
     requestAnimationFrame(
         animationLoop
@@ -337,9 +250,7 @@ galleryWrapper.addEventListener(
         if (
             event.button !== 0
         ) {
-
             return;
-
         }
 
 
@@ -349,12 +260,6 @@ galleryWrapper.addEventListener(
             event.pointerId;
 
         hasDragged = false;
-
-
-        /*
-            Kill existing momentum when
-            the user takes control.
-        */
 
         momentum = 0;
 
@@ -372,7 +277,6 @@ galleryWrapper.addEventListener(
         lastPointerTime =
             performance.now();
 
-
         dragVelocity = 0;
 
 
@@ -380,10 +284,6 @@ galleryWrapper.addEventListener(
             "dragging"
         );
 
-
-        /*
-            Find the card that was pressed.
-        */
 
         const item =
             event.target.closest(
@@ -424,8 +324,7 @@ galleryWrapper.addEventListener(
 
         if (
             !isDragging ||
-            event.pointerId !==
-            pointerId
+            event.pointerId !== pointerId
         ) {
 
             return;
@@ -442,11 +341,6 @@ galleryWrapper.addEventListener(
             dragStartX;
 
 
-        /*
-            Movement greater than 7px
-            means this is a drag.
-        */
-
         if (
             Math.abs(distance) > 7
         ) {
@@ -455,11 +349,6 @@ galleryWrapper.addEventListener(
 
         }
 
-
-        /*
-            Remove click animation once
-            dragging actually begins.
-        */
 
         if (
             hasDragged &&
@@ -473,10 +362,6 @@ galleryWrapper.addEventListener(
         }
 
 
-        /*
-            Follow pointer.
-        */
-
         position =
             dragStartPosition +
             distance;
@@ -486,11 +371,6 @@ galleryWrapper.addEventListener(
 
         renderGallery();
 
-
-        /*
-            Calculate actual pointer
-            velocity.
-        */
 
         const elapsed =
             now -
@@ -527,7 +407,7 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-   RELEASE DRAG
+   RELEASE
 ======================================== */
 
 function releaseDrag(event) {
@@ -550,10 +430,8 @@ function releaseDrag(event) {
 
 
     /*
-        CLICK
-        -----
-        If the user barely moved,
-        open the project.
+        A short click opens the
+        project lightbox.
     */
 
     if (
@@ -569,10 +447,7 @@ function releaseDrag(event) {
 
 
     /*
-        MOMENTUM
-        --------
-        Turn release velocity into
-        a strong glide.
+        Strong momentum from release.
     */
 
     if (
@@ -587,20 +462,14 @@ function releaseDrag(event) {
         momentum =
             Math.max(
                 -MAX_MOMENTUM,
-
                 Math.min(
                     MAX_MOMENTUM,
-
                     momentum
                 )
             );
 
     }
 
-
-    /*
-        Remove press state.
-    */
 
     if (
         pressedItem
@@ -619,21 +488,6 @@ function releaseDrag(event) {
 
     dragVelocity = 0;
 
-
-    try {
-
-        galleryWrapper.releasePointerCapture(
-            event.pointerId
-        );
-
-    } catch (error) {
-
-        /*
-            Already released.
-        */
-
-    }
-
 }
 
 
@@ -642,7 +496,6 @@ galleryWrapper.addEventListener(
     releaseDrag
 );
 
-
 galleryWrapper.addEventListener(
     "pointercancel",
     releaseDrag
@@ -650,61 +503,7 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-   LOST POINTER
-======================================== */
-
-galleryWrapper.addEventListener(
-    "lostpointercapture",
-    () => {
-
-        if (
-            !isDragging
-        ) {
-
-            return;
-
-        }
-
-
-        isDragging = false;
-
-        galleryWrapper.classList.remove(
-            "dragging"
-        );
-
-
-        if (
-            pressedItem
-        ) {
-
-            pressedItem.classList.remove(
-                "pressing"
-            );
-
-        }
-
-
-        if (
-            hasDragged
-        ) {
-
-            momentum =
-                dragVelocity *
-                MOMENTUM_MULTIPLIER;
-
-        }
-
-
-        pressedItem = null;
-
-        pointerId = null;
-
-    }
-);
-
-
-/* ========================================
-   OPEN PROJECT
+   LIGHTBOX
 ======================================== */
 
 function openProject(item) {
@@ -715,21 +514,8 @@ function openProject(item) {
         ).backgroundColor;
 
 
-    /*
-        Put the project's colour
-        into the enlarged preview.
-    */
-
     lightboxImage.style.background =
         background;
-
-
-    /*
-        Stop gallery momentum while
-        the preview is open.
-    */
-
-    momentum = 0;
 
 
     lightbox.classList.add(
@@ -742,10 +528,6 @@ function openProject(item) {
 
 }
 
-
-/* ========================================
-   CLOSE PROJECT
-======================================== */
 
 function closeLightbox() {
 
@@ -760,33 +542,34 @@ function closeLightbox() {
 }
 
 
-/* ========================================
-   CLOSE BUTTON
-======================================== */
-
 lightboxClose.addEventListener(
     "click",
-    (event) => {
-
-        event.stopPropagation();
-
-        closeLightbox();
-
-    }
+    closeLightbox
 );
 
-
-/* ========================================
-   CLICK BACKDROP
-======================================== */
 
 lightbox.addEventListener(
     "click",
     (event) => {
 
         if (
-            event.target ===
-            lightbox
+            event.target === lightbox
+        ) {
+
+            closeLightbox();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape"
         ) {
 
             closeLightbox();
@@ -798,19 +581,272 @@ lightbox.addEventListener(
 
 
 /* ========================================
-   ESCAPE
+   MAGNIFYING GLASS
 ======================================== */
 
-document.addEventListener(
-    "keydown",
+const zoomButtons =
+    document.querySelectorAll(
+        ".zoom-trigger"
+    );
+
+
+zoomButtons.forEach(
+    (button) => {
+
+        button.addEventListener(
+            "pointerdown",
+            (event) => {
+
+                event.stopPropagation();
+
+            }
+        );
+
+
+        button.addEventListener(
+            "click",
+            (event) => {
+
+                event.stopPropagation();
+
+                const item =
+                    button.closest(
+                        ".gallery-item"
+                    );
+
+                if (!item) {
+                    return;
+                }
+
+
+                activateZoom(
+                    item,
+                    event
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/*
+    Cursor-following zoom.
+
+    This is intentionally separate from
+    the normal lightbox so the user can
+    inspect a precise area of an image.
+*/
+
+let zoomingItem = null;
+
+let zoomActive = false;
+
+
+function activateZoom(
+    item,
+    event
+) {
+
+    zoomingItem =
+        item;
+
+    zoomActive = true;
+
+    item.classList.add(
+        "zooming"
+    );
+
+
+    /*
+        Use the current cursor position
+        immediately.
+    */
+
+    updateZoom(
+        event,
+        item
+    );
+
+}
+
+
+/*
+    Follow the cursor over the image.
+*/
+
+galleryWrapper.addEventListener(
+    "pointermove",
     (event) => {
 
         if (
-            event.key ===
-            "Escape"
+            !zoomActive ||
+            !zoomingItem
         ) {
 
-            closeLightbox();
+            return;
+
+        }
+
+
+        if (
+            event.target.closest(
+                ".zoom-trigger"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        updateZoom(
+            event,
+            zoomingItem
+        );
+
+    }
+);
+
+
+function updateZoom(
+    event,
+    item
+) {
+
+    const rect =
+        item.getBoundingClientRect();
+
+
+    const x =
+        event.clientX -
+        rect.left;
+
+    const y =
+        event.clientY -
+        rect.top;
+
+
+    const percentX =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                (x / rect.width) * 100
+            )
+        );
+
+
+    const percentY =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                (y / rect.height) * 100
+            )
+        );
+
+
+    item.style.transformOrigin =
+        `${percentX}% ${percentY}%`;
+
+    item.style.transform =
+        `scale(1.55)`;
+
+}
+
+
+/*
+    Clicking outside the magnifier
+    removes the zoom.
+*/
+
+document.addEventListener(
+    "pointerdown",
+    (event) => {
+
+        if (
+            !zoomActive
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            event.target.closest(
+                ".zoom-trigger"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            event.target.closest(
+                ".gallery-item"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        deactivateZoom();
+
+    }
+);
+
+
+function deactivateZoom() {
+
+    if (
+        !zoomingItem
+    ) {
+
+        return;
+
+    }
+
+
+    zoomingItem.style.transform =
+        "";
+
+    zoomingItem.style.transformOrigin =
+        "";
+
+
+    zoomingItem.classList.remove(
+        "zooming"
+    );
+
+
+    zoomingItem = null;
+
+    zoomActive = false;
+
+}
+
+
+/*
+    Release / leave gallery also
+    removes the active zoom.
+*/
+
+galleryWrapper.addEventListener(
+    "pointerleave",
+    () => {
+
+        if (
+            zoomActive
+        ) {
+
+            deactivateZoom();
 
         }
 
@@ -826,15 +862,43 @@ pricingButton.addEventListener(
     "click",
     () => {
 
-        /*
-            Use native smooth scrolling
-            for the long-page transition.
-        */
+        smoothScrollTo(
+            pricingSection
+        );
 
-        pricingSection.scrollIntoView(
-            {
-                behavior: "smooth",
-                block: "start"
+    }
+);
+
+
+/* ========================================
+   BOTTOM NAV
+======================================== */
+
+navItems.forEach(
+    (item) => {
+
+        item.addEventListener(
+            "click",
+            () => {
+
+                const targetId =
+                    item.dataset.target;
+
+                const target =
+                    document.getElementById(
+                        targetId
+                    );
+
+
+                if (!target) {
+                    return;
+                }
+
+
+                smoothScrollTo(
+                    target
+                );
+
             }
         );
 
@@ -843,27 +907,230 @@ pricingButton.addEventListener(
 
 
 /* ========================================
-   EXTRA SMOOTH PAGE SCROLLING
+   SMOOTH SECTION SCROLL
 ======================================== */
 
-/*
-    We deliberately DO NOT intercept
-    the wheel event.
+let scrollAnimation = null;
 
-    That is important because the gallery
-    must never steal the mouse wheel.
 
-    The browser therefore retains native
-    trackpad / mouse-wheel scrolling.
+function smoothScrollTo(
+    element
+) {
 
-    scroll-behavior: smooth handles
-    programmatic page movement such as
-    the pricing button.
-*/
+    const start =
+        window.scrollY;
+
+
+    const target =
+        element.getBoundingClientRect().top +
+        window.scrollY -
+        35;
+
+
+    const distance =
+        target -
+        start;
+
+
+    const duration =
+        Math.min(
+            1150,
+            Math.max(
+                650,
+                Math.abs(distance) * .7
+            )
+        );
+
+
+    const startTime =
+        performance.now();
+
+
+    if (
+        scrollAnimation
+    ) {
+
+        cancelAnimationFrame(
+            scrollAnimation
+        );
+
+    }
+
+
+    function animate(
+        currentTime
+    ) {
+
+        const progress =
+            Math.min(
+                1,
+                (
+                    currentTime -
+                    startTime
+                ) /
+                duration
+            );
+
+
+        /*
+            Quintic ease-out.
+            Very smooth at the beginning
+            and settles naturally.
+        */
+
+        const eased =
+            1 -
+            Math.pow(
+                1 - progress,
+                5
+            );
+
+
+        window.scrollTo(
+            0,
+            start +
+            distance *
+            eased
+        );
+
+
+        if (
+            progress < 1
+        ) {
+
+            scrollAnimation =
+                requestAnimationFrame(
+                    animate
+                );
+
+        } else {
+
+            scrollAnimation =
+                null;
+
+        }
+
+    }
+
+
+    scrollAnimation =
+        requestAnimationFrame(
+            animate
+        );
+
+}
 
 
 /* ========================================
-   PREVENT IMAGE / TEXT DRAGGING
+   ACTIVE NAVIGATION
+======================================== */
+
+const sections =
+    document.querySelectorAll(
+        "[data-section]"
+    );
+
+
+const sectionObserver =
+    new IntersectionObserver(
+        (entries) => {
+
+            entries.forEach(
+                (entry) => {
+
+                    if (
+                        entry.isIntersecting
+                    ) {
+
+                        const id =
+                            entry.target.dataset.section;
+
+
+                        navItems.forEach(
+                            (item) => {
+
+                                item.classList.toggle(
+                                    "active",
+                                    item.dataset.target === id
+                                );
+
+                            }
+                        );
+
+                    }
+
+                }
+            );
+
+        },
+        {
+            threshold: .25
+        }
+    );
+
+
+sections.forEach(
+    (section) => {
+
+        sectionObserver.observe(
+            section
+        );
+
+    }
+);
+
+
+/* ========================================
+   FAQ
+======================================== */
+
+const faqItems =
+    document.querySelectorAll(
+        ".faq-item"
+    );
+
+
+faqItems.forEach(
+    (item) => {
+
+        item.addEventListener(
+            "toggle",
+            () => {
+
+                if (
+                    !item.open
+                ) {
+
+                    return;
+
+                }
+
+
+                faqItems.forEach(
+                    (other) => {
+
+                        if (
+                            other !== item
+                        ) {
+
+                            other.removeAttribute(
+                                "open"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/* ========================================
+   PREVENT IMAGE DRAGGING
 ======================================== */
 
 gallery.addEventListener(
