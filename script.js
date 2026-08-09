@@ -1,4 +1,3 @@
-```javascript
 /* =========================================================
    HZY PORTFOLIO
    JAVASCRIPT MATCHED DIRECTLY TO THE CURRENT HTML
@@ -1458,4 +1457,3 @@ requestAnimationFrame(
 
     }
 );
-```
