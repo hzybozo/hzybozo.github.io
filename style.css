@@ -99,7 +99,6 @@ p {
     color: var(--muted);
 }
 
-
 /* ========================================
    CURSOR
 ======================================== */
@@ -136,7 +135,6 @@ p {
     transform: translate3d(-50%, -50%, 0);
     transition: opacity .3s ease;
 }
-
 
 /* ========================================
    BACKGROUND
@@ -178,7 +176,6 @@ p {
     background-size: 60px 60px;
     mask-image: linear-gradient(to bottom, black, transparent 85%);
 }
-
 
 /* ========================================
    HERO
@@ -285,7 +282,6 @@ p {
     opacity: .7;
 }
 
-
 /* ========================================
    SECTION HEADERS
 ======================================== */
@@ -312,7 +308,6 @@ p {
     color: #697083;
     font-size: .78rem;
 }
-
 
 /* ========================================
    GALLERY
@@ -348,8 +343,9 @@ p {
     border: 1px solid rgba(255,255,255,.11);
     box-shadow: 0 25px 65px rgba(0,0,0,.32);
     cursor: pointer;
+    transform-style: preserve-3d;
+    will-change: transform;
     transition:
-        transform .55s cubic-bezier(.2,.8,.2,1),
         border-color .3s ease,
         box-shadow .3s ease;
 }
@@ -438,6 +434,18 @@ p {
     stroke-width: 1.8;
 }
 
+/* ========================================
+   SMOOTH TILT
+======================================== */
+
+.tilt-frame,
+.folder-card,
+.pricing-card,
+.tool-card,
+.social-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+}
 
 /* ========================================
    UI BUILDS
@@ -478,7 +486,6 @@ p {
     border: 1px solid var(--line);
     box-shadow: 0 20px 50px rgba(0,0,0,.2);
     transition:
-        transform .45s cubic-bezier(.2,.8,.2,1),
         border-color .3s ease,
         box-shadow .3s ease;
 }
@@ -512,7 +519,6 @@ p {
     margin-top: 7px;
     font-size: .88rem;
 }
-
 
 /* ========================================
    PRICING
@@ -555,10 +561,13 @@ p {
     padding: 32px;
     border-radius: var(--radius);
     background:
-        linear-gradient(145deg,rgba(19,21,31,.92),rgba(10,12,18,.95));
+        linear-gradient(
+            145deg,
+            rgba(19,21,31,.92),
+            rgba(10,12,18,.95)
+        );
     border: 1px solid var(--line);
     transition:
-        transform .45s cubic-bezier(.2,.8,.2,1),
         border-color .3s ease,
         box-shadow .3s ease;
 }
@@ -712,7 +721,6 @@ p {
     border: 1px solid var(--line);
 }
 
-
 /* ========================================
    TOOLS
 ======================================== */
@@ -743,7 +751,6 @@ p {
     background: rgba(255,255,255,.035);
     border: 1px solid var(--line);
     transition:
-        transform .45s cubic-bezier(.2,.8,.2,1),
         background .3s ease,
         border-color .3s ease;
 }
@@ -792,7 +799,6 @@ p {
     margin-top: 7px;
     font-size: .8rem;
 }
-
 
 /* ========================================
    FAQ
@@ -856,7 +862,6 @@ p {
     line-height: 1.75;
 }
 
-
 /* ========================================
    SOCIALS
 ======================================== */
@@ -892,7 +897,6 @@ p {
     background: rgba(255,255,255,.035);
     border: 1px solid var(--line);
     transition:
-        transform .45s cubic-bezier(.2,.8,.2,1),
         border-color .3s ease,
         background .3s ease;
 }
@@ -951,7 +955,6 @@ p {
     font-size: 1.15rem;
 }
 
-
 /* ========================================
    FOOTER
 ======================================== */
@@ -967,7 +970,6 @@ footer {
 footer p {
     font-size: .75rem;
 }
-
 
 /* ========================================
    LIGHTBOX
@@ -1003,6 +1005,9 @@ footer p {
     width: 100%;
     aspect-ratio: 16 / 10;
     border-radius: 20px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
     transform: scale(.86);
     transition: transform .4s cubic-bezier(.2,.8,.2,1);
     box-shadow: 0 40px 110px rgba(0,0,0,.6);
@@ -1010,31 +1015,6 @@ footer p {
 
 .lightbox.active .lightbox-image {
     transform: scale(1);
-}
-
-.lightbox-close {
-    position: fixed;
-    top: 25px;
-    right: 25px;
-    z-index: 10;
-    width: 48px;
-    height: 48px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(255,255,255,.09);
-    border: 1px solid rgba(255,255,255,.13);
-    color: white;
-    font-size: 26px;
-    line-height: 1;
-    transition:
-        background .25s ease,
-        transform .25s ease;
-}
-
-.lightbox-close:hover {
-    background: rgba(255,255,255,.17);
-    transform: scale(1.06);
 }
 
 .lightbox-magnifier {
@@ -1063,7 +1043,6 @@ footer p {
 .lightbox-magnifier.active {
     background: rgba(139,92,246,.35);
 }
-
 
 /* ========================================
    CUSTOM SCROLLBAR
@@ -1096,7 +1075,6 @@ footer p {
     box-shadow: 0 0 15px rgba(139,92,246,.4);
     transform-origin: top;
 }
-
 
 /* ========================================
    BOTTOM NAV
@@ -1168,7 +1146,6 @@ footer p {
     white-space: nowrap;
 }
 
-
 /* ========================================
    REVEALS
 ======================================== */
@@ -1185,7 +1162,6 @@ footer p {
     opacity: 1;
     transform: translateY(0);
 }
-
 
 /* ========================================
    RESPONSIVE
@@ -1222,7 +1198,6 @@ footer p {
         min-height: 110px;
     }
 }
-
 
 @media (max-width: 650px) {
 
@@ -1292,13 +1267,7 @@ footer p {
     .lightbox {
         padding: 15px;
     }
-
-    .lightbox-close {
-        top: 13px;
-        right: 13px;
-    }
 }
-
 
 @media (prefers-reduced-motion: reduce) {
 
