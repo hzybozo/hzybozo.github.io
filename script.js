@@ -548,6 +548,7 @@ galleryWrapper.addEventListener(
                 );
 
 
+
             /*
                 Smooth the velocity rather than
                 using one potentially noisy frame.
