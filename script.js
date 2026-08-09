@@ -10,7 +10,7 @@ const gallery =
 
 const originalItems =
     Array.from(
-        document.querySelectorAll(
+        gallery.querySelectorAll(
             ".gallery-item"
         )
     );
@@ -19,11 +19,6 @@ const originalItems =
 const lightbox =
     document.getElementById(
         "lightbox"
-    );
-
-const lightboxContent =
-    document.getElementById(
-        "lightboxContent"
     );
 
 const lightboxImage =
@@ -43,21 +38,21 @@ const lightboxClose =
 
 
 /* ========================================
-   INFINITE GALLERY
+   CREATE INFINITE DUPLICATE
 ======================================== */
 
 /*
-    Make a second identical copy.
+    Original:
 
-    This gives us:
+    01 02 03 04 ... 12
 
-    01 02 03 ... 12 | 01 02 03 ... 12
+    Becomes:
 
-    Once we reach the second copy,
-    we silently jump back to the first.
+    01 02 03 04 ... 12 | 01 02 03 04 ... 12
 
-    Because they are identical, the user
-    sees a continuous infinite strip.
+    Once the first copy has completely
+    moved away, we shift the track back
+    by exactly one copy's width.
 */
 
 originalItems.forEach((item) => {
@@ -65,101 +60,267 @@ originalItems.forEach((item) => {
     const clone =
         item.cloneNode(true);
 
-    gallery.appendChild(clone);
+    gallery.appendChild(
+        clone
+    );
 
 });
 
 
-let loopWidth = 0;
+/* ========================================
+   STATE
+======================================== */
+
+let singleSetWidth = 0;
+
+let position = 0;
+
+let lastTime = performance.now();
 
 
-function calculateLoopWidth() {
+/*
+    Automatic speed.
 
-    loopWidth =
+    Pixels per second.
+
+    Increase this if you want it faster.
+*/
+
+const AUTO_SPEED = 28;
+
+
+/* ========================================
+   DRAG STATE
+======================================== */
+
+let isDragging = false;
+
+let pointerId = null;
+
+let dragStartX = 0;
+
+let dragStartPosition = 0;
+
+let lastPointerX = 0;
+
+let lastPointerTime = 0;
+
+let dragVelocity = 0;
+
+let hasDragged = false;
+
+let pressedItem = null;
+
+
+/* ========================================
+   MOMENTUM
+======================================== */
+
+let momentum = 0;
+
+
+/*
+    Momentum friction.
+
+    Higher = slides for longer.
+*/
+
+const MOMENTUM_FRICTION = 0.94;
+
+
+/*
+    Maximum momentum.
+
+    Prevents an accidental huge
+    mouse movement from launching
+    the gallery extremely far.
+*/
+
+const MAX_MOMENTUM = 2500;
+
+
+/* ========================================
+   MEASURE
+======================================== */
+
+function measureGallery() {
+
+    /*
+        Since the gallery contains two
+        identical sets, half its width
+        is one complete set.
+    */
+
+    singleSetWidth =
         gallery.scrollWidth / 2;
+
+
+    /*
+        Keep position inside the
+        infinite range.
+    */
+
+    normalizePosition();
 
 }
 
 
-calculateLoopWidth();
+window.addEventListener(
+    "load",
+    measureGallery
+);
 
 
 window.addEventListener(
     "resize",
-    calculateLoopWidth
+    measureGallery
 );
+
+
+/* ========================================
+   NORMALIZE POSITION
+======================================== */
+
+function normalizePosition() {
+
+    if (
+        singleSetWidth <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+        If moving to the right.
+    */
+
+    while (
+        position <=
+        -singleSetWidth
+    ) {
+
+        position +=
+            singleSetWidth;
+
+    }
+
+
+    /*
+        If moving to the left.
+    */
+
+    while (
+        position > 0
+    ) {
+
+        position -=
+            singleSetWidth;
+
+    }
+
+}
+
+
+/* ========================================
+   APPLY POSITION
+======================================== */
+
+function renderGallery() {
+
+    gallery.style.transform =
+        `translate3d(${position}px, 0, 0)`;
+
+}
 
 
 /* ========================================
    AUTOMATIC MOVEMENT
 ======================================== */
 
-let automaticSpeed = 0.35;
+function animationLoop(currentTime) {
+
+    const deltaTime =
+        Math.min(
+            currentTime -
+            lastTime,
+
+            50
+        );
 
 
-function automaticMovement() {
+    lastTime =
+        currentTime;
+
 
     /*
-        Automatic movement pauses while
-        the user is actively dragging or
-        looking at an enlarged project.
+        Normal automatic movement.
+
+        Positive position movement
+        means the gallery travels left.
     */
 
     if (
         !isDragging &&
+        Math.abs(momentum) < 0.1 &&
         !lightbox.classList.contains(
             "active"
         )
     ) {
 
-        galleryWrapper.scrollLeft +=
-            automaticSpeed;
-
-
-        /*
-            Infinite loop.
-        */
-
-        if (
-            galleryWrapper.scrollLeft >=
-            loopWidth
-        ) {
-
-            galleryWrapper.scrollLeft -=
-                loopWidth;
-
-        }
+        position -=
+            AUTO_SPEED *
+            (deltaTime / 1000);
 
     }
 
 
+    /*
+        Momentum after dragging.
+    */
+
+    if (
+        !isDragging &&
+        Math.abs(momentum) >= 0.1 &&
+        !lightbox.classList.contains(
+            "active"
+        )
+    ) {
+
+        position +=
+            momentum *
+            (deltaTime / 1000);
+
+
+        /*
+            Gradually kill momentum.
+        */
+
+        momentum *=
+            Math.pow(
+                MOMENTUM_FRICTION,
+                deltaTime / 16.67
+            );
+
+    }
+
+
+    normalizePosition();
+
+    renderGallery();
+
+
     requestAnimationFrame(
-        automaticMovement
+        animationLoop
     );
 
 }
 
 
-automaticMovement();
-
-
-/* ========================================
-   DRAG VARIABLES
-======================================== */
-
-let isDragging = false;
-
-let startX = 0;
-
-let startScroll = 0;
-
-let previousX = 0;
-
-let velocity = 0;
-
-let movedDuringDrag = false;
-
-let activePressedItem = null;
+requestAnimationFrame(
+    animationLoop
+);
 
 
 /* ========================================
@@ -170,6 +331,11 @@ galleryWrapper.addEventListener(
     "pointerdown",
     (event) => {
 
+        /*
+            Only respond to left mouse
+            button / primary pointer.
+        */
+
         if (
             event.button !== 0
         ) {
@@ -179,303 +345,9 @@ galleryWrapper.addEventListener(
         }
 
 
-        isDragging = true;
-
-        movedDuringDrag = false;
-
-        startX =
-            event.clientX;
-
-        previousX =
-            event.clientX;
-
-        startScroll =
-            galleryWrapper.scrollLeft;
-
-        velocity = 0;
-
-
-        galleryWrapper.classList.add(
-            "dragging"
-        );
-
-
         /*
-            Find the card underneath
-            the cursor.
-        */
-
-        const item =
-            event.target.closest(
-                ".gallery-item"
-            );
-
-
-        if (item) {
-
-            activePressedItem =
-                item;
-
-            item.classList.add(
-                "pressing"
-            );
-
-        }
-
-
-        galleryWrapper.setPointerCapture(
-            event.pointerId
-        );
-
-    }
-);
-
-
-/* ========================================
-   POINTER MOVE
-======================================== */
-
-galleryWrapper.addEventListener(
-    "pointermove",
-    (event) => {
-
-        if (!isDragging) {
-
-            return;
-
-        }
-
-
-        const movement =
-            event.clientX -
-            startX;
-
-
-        /*
-            Small movements still count
-            as a click.
-
-            Once movement passes 6px,
-            it's a drag.
-        */
-
-        if (
-            Math.abs(movement) > 6
-        ) {
-
-            movedDuringDrag = true;
-
-        }
-
-
-        /*
-            Remove the click animation
-            once the user starts dragging.
-        */
-
-        if (
-            movedDuringDrag &&
-            activePressedItem
-        ) {
-
-            activePressedItem.classList.remove(
-                "pressing"
-            );
-
-        }
-
-
-        /*
-            Move gallery according to
-            the pointer.
-        */
-
-        galleryWrapper.scrollLeft =
-            startScroll -
-            movement;
-
-
-        /*
-            Calculate velocity for
-            momentum after release.
-        */
-
-        velocity =
-            event.clientX -
-            previousX;
-
-
-        previousX =
-            event.clientX;
-
-
-        /*
-            Keep manual dragging
-            inside the infinite loop.
-        */
-
-        keepGalleryLooped();
-
-    }
-);
-
-
-/* ========================================
-   POINTER UP
-======================================== */
-
-function stopDragging() {
-
-    if (!isDragging) {
-
-        return;
-
-    }
-
-
-    isDragging = false;
-
-
-    galleryWrapper.classList.remove(
-        "dragging"
-    );
-
-
-    /*
-        If the pointer was released
-        without actually dragging,
-        open the selected project.
-
-        This means:
-
-        Press → animation
-        Release → image opens
-    */
-
-    if (
-        activePressedItem &&
-        !movedDuringDrag
-    ) {
-
-        openItem(
-            activePressedItem
-        );
-
-    }
-
-
-    /*
-        Remove the press animation.
-    */
-
-    if (activePressedItem) {
-
-        activePressedItem.classList.remove(
-            "pressing"
-        );
-
-    }
-
-
-    activePressedItem = null;
-
-
-    /*
-        Only apply momentum if the
-        user actually dragged.
-    */
-
-    if (movedDuringDrag) {
-
-        applyMomentum();
-
-    }
-
-}
-
-
-galleryWrapper.addEventListener(
-    "pointerup",
-    stopDragging
-);
-
-
-galleryWrapper.addEventListener(
-    "pointercancel",
-    stopDragging
-);
-
-
-/* ========================================
-   KEEP GALLERY INFINITE
-======================================== */
-
-function keepGalleryLooped() {
-
-    if (
-        loopWidth <= 0
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-        Moving forwards.
-    */
-
-    if (
-        galleryWrapper.scrollLeft >=
-        loopWidth
-    ) {
-
-        galleryWrapper.scrollLeft -=
-            loopWidth;
-
-    }
-
-
-    /*
-        Moving backwards.
-    */
-
-    if (
-        galleryWrapper.scrollLeft < 0
-    ) {
-
-        galleryWrapper.scrollLeft +=
-            loopWidth;
-
-    }
-
-}
-
-
-/* ========================================
-   DRAG MOMENTUM
-======================================== */
-
-function applyMomentum() {
-
-    let momentum =
-        velocity * 7;
-
-
-    function animateMomentum() {
-
-        if (
-            Math.abs(momentum) < 0.5
-        ) {
-
-            return;
-
-        }
-
-
-        /*
-            Stop momentum when an image
-            is opened.
+            Don't start dragging if the
+            enlarged image is open.
         */
 
         if (
@@ -489,67 +361,400 @@ function applyMomentum() {
         }
 
 
-        galleryWrapper.scrollLeft -=
-            momentum;
+        isDragging = true;
+
+        pointerId =
+            event.pointerId;
+
+        hasDragged = false;
+
+        momentum = 0;
 
 
-        keepGalleryLooped();
+        dragStartX =
+            event.clientX;
+
+        dragStartPosition =
+            position;
+
+
+        lastPointerX =
+            event.clientX;
+
+        lastPointerTime =
+            performance.now();
+
+
+        dragVelocity = 0;
+
+
+        galleryWrapper.classList.add(
+            "dragging"
+        );
 
 
         /*
-            Gradually slow down.
+            Detect which project was
+            pressed.
         */
 
-        momentum *= 0.94;
+        const item =
+            event.target.closest(
+                ".gallery-item"
+            );
 
 
-        requestAnimationFrame(
-            animateMomentum
+        if (item) {
+
+            pressedItem =
+                item;
+
+            pressedItem.classList.add(
+                "pressing"
+            );
+
+        }
+
+
+        galleryWrapper.setPointerCapture(
+            event.pointerId
+        );
+
+
+        /*
+            Prevent browser drag behaviour.
+        */
+
+        event.preventDefault();
+
+    }
+);
+
+
+/* ========================================
+   POINTER MOVE
+======================================== */
+
+galleryWrapper.addEventListener(
+    "pointermove",
+    (event) => {
+
+        if (
+            !isDragging ||
+            event.pointerId !== pointerId
+        ) {
+
+            return;
+
+        }
+
+
+        const currentTime =
+            performance.now();
+
+
+        const distance =
+            event.clientX -
+            dragStartX;
+
+
+        /*
+            Once movement exceeds 7px,
+            it is officially a drag.
+        */
+
+        if (
+            Math.abs(distance) > 7
+        ) {
+
+            hasDragged = true;
+
+        }
+
+
+        /*
+            Remove the press animation
+            once the user starts dragging.
+        */
+
+        if (
+            hasDragged &&
+            pressedItem
+        ) {
+
+            pressedItem.classList.remove(
+                "pressing"
+            );
+
+        }
+
+
+        /*
+            Directly follow the mouse.
+        */
+
+        position =
+            dragStartPosition +
+            distance;
+
+
+        normalizePosition();
+
+        renderGallery();
+
+
+        /*
+            Calculate velocity.
+
+            This is what gives the drag
+            its momentum when released.
+        */
+
+        const timeDifference =
+            currentTime -
+            lastPointerTime;
+
+
+        if (
+            timeDifference > 0
+        ) {
+
+            dragVelocity =
+                (
+                    event.clientX -
+                    lastPointerX
+                ) /
+                (
+                    timeDifference / 1000
+                );
+
+        }
+
+
+        lastPointerX =
+            event.clientX;
+
+        lastPointerTime =
+            currentTime;
+
+
+        event.preventDefault();
+
+    }
+);
+
+
+/* ========================================
+   POINTER UP
+======================================== */
+
+function releasePointer(event) {
+
+    if (
+        !isDragging ||
+        event.pointerId !== pointerId
+    ) {
+
+        return;
+
+    }
+
+
+    isDragging = false;
+
+    galleryWrapper.classList.remove(
+        "dragging"
+    );
+
+
+    /*
+        If this was a click rather than
+        a drag, open the project.
+    */
+
+    if (
+        pressedItem &&
+        !hasDragged
+    ) {
+
+        openProject(
+            pressedItem
         );
 
     }
 
 
-    requestAnimationFrame(
-        animateMomentum
-    );
+    /*
+        Remove the press animation.
+    */
+
+    if (pressedItem) {
+
+        pressedItem.classList.remove(
+            "pressing"
+        );
+
+    }
+
+
+    /*
+        Give the gallery momentum.
+
+        The negative sign makes the
+        gallery continue in the same
+        direction as the drag.
+    */
+
+    momentum =
+        Math.max(
+            -MAX_MOMENTUM,
+
+            Math.min(
+                MAX_MOMENTUM,
+
+                dragVelocity
+            )
+        );
+
+
+    /*
+        Clear state.
+    */
+
+    pressedItem = null;
+
+    pointerId = null;
+
+    dragVelocity = 0;
+
+
+    try {
+
+        galleryWrapper.releasePointerCapture(
+            event.pointerId
+        );
+
+    } catch (error) {
+
+        /*
+            Pointer capture may already
+            have been released by the browser.
+        */
+
+    }
 
 }
+
+
+galleryWrapper.addEventListener(
+    "pointerup",
+    releasePointer
+);
+
+
+galleryWrapper.addEventListener(
+    "pointercancel",
+    releasePointer
+);
+
+
+/* ========================================
+   POINTER LEAVES WINDOW
+======================================== */
+
+galleryWrapper.addEventListener(
+    "lostpointercapture",
+    () => {
+
+        if (!isDragging) {
+
+            return;
+
+        }
+
+
+        isDragging = false;
+
+        galleryWrapper.classList.remove(
+            "dragging"
+        );
+
+
+        if (pressedItem) {
+
+            pressedItem.classList.remove(
+                "pressing"
+            );
+
+        }
+
+
+        /*
+            Keep whatever velocity was
+            already calculated.
+        */
+
+        momentum =
+            Math.max(
+                -MAX_MOMENTUM,
+
+                Math.min(
+                    MAX_MOMENTUM,
+
+                    dragVelocity
+                )
+            );
+
+
+        pressedItem = null;
+
+        pointerId = null;
+
+    }
+);
 
 
 /* ========================================
    OPEN PROJECT
 ======================================== */
 
-function openItem(item) {
+function openProject(item) {
 
-    const background =
+    const computedStyle =
         window.getComputedStyle(
             item
-        ).backgroundColor;
+        );
+
+
+    const backgroundColor =
+        computedStyle.backgroundColor;
 
 
     const number =
         item.querySelector(
             ".image-number"
-        ).textContent;
+        );
 
-
-    /*
-        Give the enlarged image the
-        same placeholder colour.
-    */
 
     lightboxImage.style.background =
-        background;
+        backgroundColor;
 
 
     lightboxNumber.textContent =
-        number;
+        number
+            ? number.textContent
+            : "";
 
 
     /*
-        Show lightbox.
+        Stop momentum when opening.
+    */
+
+    momentum = 0;
+
+
+    /*
+        Show the lightbox.
     */
 
     lightbox.classList.add(
@@ -558,8 +763,8 @@ function openItem(item) {
 
 
     /*
-        Prevent the page itself from
-        scrolling while the image is open.
+        Stop the website behind it
+        from scrolling.
     */
 
     document.body.style.overflow =
@@ -591,25 +796,23 @@ function closeLightbox() {
 
 lightboxClose.addEventListener(
     "click",
-    closeLightbox
+    (event) => {
+
+        event.stopPropagation();
+
+        closeLightbox();
+
+    }
 );
 
 
 /* ========================================
-   CLICK OUTSIDE IMAGE
+   CLICK BACKGROUND TO CLOSE
 ======================================== */
 
 lightbox.addEventListener(
     "click",
     (event) => {
-
-        /*
-            Only close when the actual
-            dark background is clicked.
-
-            Clicking the image itself
-            does nothing.
-        */
 
         if (
             event.target ===
@@ -633,7 +836,8 @@ document.addEventListener(
     (event) => {
 
         if (
-            event.key === "Escape"
+            event.key ===
+            "Escape"
         ) {
 
             closeLightbox();
@@ -645,28 +849,24 @@ document.addEventListener(
 
 
 /* ========================================
-   NO MOUSE-WHEEL HANDLER
+   IMPORTANT: NO WHEEL EVENT
 ======================================== */
 
 /*
-    Deliberately no "wheel" event is
-    attached to the gallery.
+    There is deliberately NO wheel
+    listener anywhere in this script.
 
-    The gallery wrapper also uses:
+    The gallery does not have native
+    horizontal scrolling.
 
-        overflow: hidden;
+    Therefore:
 
-    Therefore the gallery cannot consume
-    the mouse wheel.
+        Mouse over gallery
+                +
+           scroll wheel
+                ↓
+        normal webpage scroll
 
-    Example:
-
-        Cursor over gallery
-                    ↓
-             Scroll wheel
-                    ↓
-        Normal webpage scrolls
-
-    Meanwhile the gallery's own automatic
-    animation continues independently.
+    The gallery continues its automatic
+    horizontal animation independently.
 */
