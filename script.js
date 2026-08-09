@@ -865,7 +865,7 @@ document.addEventListener(
                 +
            scroll wheel
                 ↓
-        normal webpage scroll
+        normal webpageeeee scroll
 
     The gallery continues its automatic
     horizontal animation independently.
