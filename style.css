@@ -10,138 +10,170 @@ html {
 
 body {
     background: #080808;
-    color: white;
+    color: #ffffff;
     font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
     overflow-x: hidden;
 }
 
-/* =========================
+
+/* ========================================
    HERO
-========================= */
+======================================== */
 
 .hero {
     min-height: 100vh;
+
     display: flex;
     align-items: center;
+
     padding: 60px;
 }
 
 .hero-content {
     width: 100%;
     max-width: 1400px;
-    margin: auto;
+    margin: 0 auto;
 }
 
 .eyebrow {
     font-size: 12px;
     letter-spacing: 0.18em;
-    color: #777;
+    color: #777777;
+
     margin-bottom: 20px;
 }
 
 .hero h1 {
     font-size: clamp(5rem, 13vw, 13rem);
+
     line-height: 0.82;
+
     letter-spacing: -0.075em;
+
     font-weight: 700;
 }
 
 .hero-description {
-    margin-top: 45px;
     max-width: 560px;
-    color: #888;
+
+    margin-top: 45px;
+
+    color: #888888;
+
     font-size: 18px;
+
     line-height: 1.6;
 }
 
 
-/* =========================
+/* ========================================
    GALLERY SECTION
-========================= */
+======================================== */
 
 .gallery-section {
-    padding: 120px 0 160px;
+    padding: 120px 0 180px;
 }
 
 .gallery-header {
     width: calc(100% - 120px);
+
     max-width: 1400px;
+
     margin: 0 auto 50px;
 
     display: flex;
-    align-items: end;
+
+    align-items: flex-end;
+
     justify-content: space-between;
 }
 
 .gallery-header h2 {
     font-size: clamp(3rem, 7vw, 7rem);
+
     line-height: 0.9;
+
     letter-spacing: -0.06em;
 }
 
 .drag-hint {
-    color: #666;
+    color: #666666;
+
     font-size: 14px;
 }
 
 
-/* =========================
-   HORIZONTAL GALLERY
-========================= */
+/* ========================================
+   GALLERY
+======================================== */
 
 .gallery-wrapper {
     width: 100%;
-    overflow: hidden;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
     cursor: grab;
+
     user-select: none;
+
+    scrollbar-width: none;
+
+    -ms-overflow-style: none;
+
+    touch-action: pan-y;
 }
 
-.gallery-wrapper:active {
+.gallery-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.gallery-wrapper.dragging {
     cursor: grabbing;
 }
 
 .gallery {
     display: flex;
-    gap: 22px;
 
     width: max-content;
 
-    padding: 20px 60px;
+    gap: 22px;
 
-    will-change: transform;
+    padding: 20px 60px;
 }
 
 
-/* =========================
-   IMAGE CARDS
-========================= */
+/* ========================================
+   PROJECT CARDS
+======================================== */
 
 .gallery-item {
     width: min(42vw, 520px);
+
     height: min(58vw, 650px);
 
     flex-shrink: 0;
-
-    border-radius: 4px;
 
     position: relative;
 
     overflow: hidden;
 
+    border-radius: 5px;
+
     cursor: pointer;
 
-    transform: scale(1);
-
     transition:
-        transform 0.45s cubic-bezier(.16,1,.3,1),
+        transform 0.45s cubic-bezier(.16, 1, .3, 1),
         filter 0.45s ease;
 
     box-shadow:
-        0 20px 60px rgba(0,0,0,0.25);
+        0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .gallery-item:hover {
-    transform: scale(0.97);
+    transform: scale(0.965);
+
     filter: brightness(1.08);
 }
 
@@ -149,16 +181,17 @@ body {
     content: "";
 
     position: absolute;
+
     inset: 0;
+
+    pointer-events: none;
 
     background:
         linear-gradient(
             135deg,
-            rgba(255,255,255,0.15),
+            rgba(255, 255, 255, 0.18),
             transparent 40%
         );
-
-    pointer-events: none;
 }
 
 .image-number {
@@ -167,19 +200,21 @@ body {
     top: 24px;
     left: 24px;
 
+    z-index: 2;
+
+    color: white;
+
     font-size: 14px;
+
     font-weight: 600;
 
     mix-blend-mode: difference;
-    color: white;
-
-    z-index: 2;
 }
 
 
-/* =========================
+/* ========================================
    PLACEHOLDER COLOURS
-========================= */
+======================================== */
 
 .colour-1 {
     background: #ff5c5c;
@@ -230,9 +265,9 @@ body {
 }
 
 
-/* =========================
+/* ========================================
    LIGHTBOX
-========================= */
+======================================== */
 
 .lightbox {
     position: fixed;
@@ -242,17 +277,21 @@ body {
     z-index: 1000;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     padding: 40px;
 
-    background: rgba(0,0,0,0.75);
+    background: rgba(0, 0, 0, 0.78);
 
     backdrop-filter: blur(25px);
+
     -webkit-backdrop-filter: blur(25px);
 
     opacity: 0;
+
     visibility: hidden;
 
     transition:
@@ -262,21 +301,25 @@ body {
 
 .lightbox.active {
     opacity: 1;
+
     visibility: visible;
 }
 
 .lightbox-content {
     width: min(85vw, 1000px);
+
     height: min(80vh, 750px);
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
-    transform: scale(0.85);
+    transform: scale(0.82);
 
     transition:
-        transform 0.6s cubic-bezier(.16,1,.3,1);
+        transform 0.6s cubic-bezier(.16, 1, .3, 1);
 }
 
 .lightbox.active .lightbox-content {
@@ -285,33 +328,39 @@ body {
 
 .lightbox-image {
     width: 100%;
+
     height: 100%;
 
+    position: relative;
+
     display: flex;
+
     align-items: flex-start;
+
     justify-content: flex-start;
 
     padding: 30px;
 
-    position: relative;
-
     border-radius: 5px;
 
     box-shadow:
-        0 40px 120px rgba(0,0,0,0.5);
+        0 40px 120px rgba(0, 0, 0, 0.55);
 }
 
 #lightboxNumber {
-    font-size: 16px;
-    font-weight: 600;
     color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
     mix-blend-mode: difference;
 }
 
 
-/* =========================
-   CLOSE BUTTON
-========================= */
+/* ========================================
+   LIGHTBOX CLOSE
+======================================== */
 
 .lightbox-close {
     position: absolute;
@@ -319,22 +368,24 @@ body {
     top: 25px;
     right: 30px;
 
+    z-index: 10;
+
     width: 55px;
     height: 55px;
 
     border: 0;
+
     border-radius: 50%;
 
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
 
     color: white;
 
     font-size: 32px;
+
     line-height: 1;
 
     cursor: pointer;
-
-    z-index: 10;
 
     transition:
         transform 0.3s ease,
@@ -343,13 +394,14 @@ body {
 
 .lightbox-close:hover {
     transform: rotate(90deg) scale(1.1);
-    background: rgba(255,255,255,0.2);
+
+    background: rgba(255, 255, 255, 0.2);
 }
 
 
-/* =========================
+/* ========================================
    MOBILE
-========================= */
+======================================== */
 
 @media (max-width: 700px) {
 
@@ -357,8 +409,13 @@ body {
         padding: 30px;
     }
 
+    .hero h1 {
+        font-size: 18vw;
+    }
+
     .hero-description {
         margin-top: 30px;
+
         font-size: 16px;
     }
 
@@ -368,9 +425,10 @@ body {
 
     .gallery-header {
         width: calc(100% - 60px);
-        margin-bottom: 30px;
 
         display: block;
+
+        margin-bottom: 30px;
     }
 
     .gallery-header h2 {
@@ -379,16 +437,19 @@ body {
 
     .drag-hint {
         display: block;
+
         margin-top: 20px;
     }
 
     .gallery {
         gap: 15px;
+
         padding: 15px 30px;
     }
 
     .gallery-item {
         width: 72vw;
+
         height: 100vw;
     }
 
@@ -398,11 +459,13 @@ body {
 
     .lightbox-content {
         width: 90vw;
+
         height: 75vh;
     }
 
     .lightbox-close {
         top: 15px;
+
         right: 15px;
     }
 }
