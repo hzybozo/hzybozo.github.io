@@ -33,6 +33,7 @@ body {
 .hero-content {
     width: 100%;
     max-width: 1400px;
+
     margin: 0 auto;
 }
 
@@ -45,11 +46,11 @@ body {
 }
 
 .hero h1 {
-    font-size: clamp(5rem, 13vw, 13rem);
+    font-size: clamp(6rem, 16vw, 15rem);
 
-    line-height: 0.82;
+    line-height: 0.78;
 
-    letter-spacing: -0.075em;
+    letter-spacing: -0.085em;
 
     font-weight: 700;
 }
@@ -68,6 +69,33 @@ body {
 
 
 /* ========================================
+   DISCORD
+======================================== */
+
+.hero-discord {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 30px;
+
+    font-size: 14px;
+}
+
+.hero-discord span {
+    color: #555555;
+}
+
+.hero-discord strong {
+    color: #ffffff;
+
+    font-weight: 500;
+}
+
+
+/* ========================================
    GALLERY SECTION
 ======================================== */
 
@@ -81,12 +109,6 @@ body {
     max-width: 1400px;
 
     margin: 0 auto 50px;
-
-    display: flex;
-
-    align-items: flex-end;
-
-    justify-content: space-between;
 }
 
 .gallery-header h2 {
@@ -97,15 +119,9 @@ body {
     letter-spacing: -0.06em;
 }
 
-.drag-hint {
-    color: #666666;
-
-    font-size: 14px;
-}
-
 
 /* ========================================
-   GALLERY
+   GALLERY WRAPPER
 ======================================== */
 
 .gallery-wrapper {
@@ -114,13 +130,13 @@ body {
     overflow-x: auto;
     overflow-y: hidden;
 
-    cursor: grab;
-
-    user-select: none;
-
     scrollbar-width: none;
 
     -ms-overflow-style: none;
+
+    cursor: grab;
+
+    user-select: none;
 
     touch-action: pan-y;
 }
@@ -132,6 +148,11 @@ body {
 .gallery-wrapper.dragging {
     cursor: grabbing;
 }
+
+
+/* ========================================
+   GALLERY
+======================================== */
 
 .gallery {
     display: flex;
@@ -145,7 +166,7 @@ body {
 
 
 /* ========================================
-   PROJECT CARDS
+   CARDS
 ======================================== */
 
 .gallery-item {
@@ -163,12 +184,11 @@ body {
 
     cursor: pointer;
 
+    transform: scale(1);
+
     transition:
         transform 0.45s cubic-bezier(.16, 1, .3, 1),
         filter 0.45s ease;
-
-    box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .gallery-item:hover {
@@ -176,6 +196,21 @@ body {
 
     filter: brightness(1.08);
 }
+
+
+/* CLICK ANIMATION */
+
+.gallery-item.pressing {
+    transform: scale(0.92);
+
+    filter: brightness(0.85);
+
+    transition:
+        transform 0.12s cubic-bezier(.4, 0, .2, 1);
+}
+
+
+/* CARD SHINE */
 
 .gallery-item::after {
     content: "";
@@ -193,6 +228,9 @@ body {
             transparent 40%
         );
 }
+
+
+/* NUMBER */
 
 .image-number {
     position: absolute;
@@ -305,6 +343,9 @@ body {
     visibility: visible;
 }
 
+
+/* LARGE IMAGE */
+
 .lightbox-content {
     width: min(85vw, 1000px);
 
@@ -316,14 +357,19 @@ body {
 
     justify-content: center;
 
-    transform: scale(0.82);
+    transform: scale(0.75);
+
+    opacity: 0;
 
     transition:
-        transform 0.6s cubic-bezier(.16, 1, .3, 1);
+        transform 0.6s cubic-bezier(.16, 1, .3, 1),
+        opacity 0.35s ease;
 }
 
 .lightbox.active .lightbox-content {
     transform: scale(1);
+
+    opacity: 1;
 }
 
 .lightbox-image {
@@ -359,7 +405,7 @@ body {
 
 
 /* ========================================
-   LIGHTBOX CLOSE
+   CLOSE BUTTON
 ======================================== */
 
 .lightbox-close {
@@ -398,6 +444,10 @@ body {
     background: rgba(255, 255, 255, 0.2);
 }
 
+.lightbox-close:active {
+    transform: rotate(90deg) scale(0.9);
+}
+
 
 /* ========================================
    MOBILE
@@ -410,13 +460,17 @@ body {
     }
 
     .hero h1 {
-        font-size: 18vw;
+        font-size: 22vw;
     }
 
     .hero-description {
         margin-top: 30px;
 
         font-size: 16px;
+    }
+
+    .hero-discord {
+        margin-top: 25px;
     }
 
     .gallery-section {
@@ -426,19 +480,11 @@ body {
     .gallery-header {
         width: calc(100% - 60px);
 
-        display: block;
-
         margin-bottom: 30px;
     }
 
     .gallery-header h2 {
         font-size: 16vw;
-    }
-
-    .drag-hint {
-        display: block;
-
-        margin-top: 20px;
     }
 
     .gallery {
