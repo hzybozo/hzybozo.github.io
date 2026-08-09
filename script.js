@@ -2,8 +2,11 @@
 ELEMENTS
 ======================================== */
 
-const galleryWrapper = document.getElementById("galleryWrapper");
-const gallery = document.getElementById("gallery");
+const galleryWrapper =
+    document.getElementById("galleryWrapper");
+
+const gallery =
+    document.getElementById("gallery");
 
 const pricingButton =
     document.getElementById("pricingButton");
@@ -52,18 +55,28 @@ const scrollProgress =
 CURSOR
 ======================================== */
 
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
+let mouseX =
+    window.innerWidth / 2;
 
-let cursorX = mouseX;
-let cursorY = mouseY;
+let mouseY =
+    window.innerHeight / 2;
+
+let cursorX =
+    mouseX;
+
+let cursorY =
+    mouseY;
+
 
 document.addEventListener(
     "pointermove",
     (event) => {
 
-        mouseX = event.clientX;
-        mouseY = event.clientY;
+        mouseX =
+            event.clientX;
+
+        mouseY =
+            event.clientY;
 
     }
 );
@@ -102,9 +115,12 @@ function cursorLoop() {
     }
 
 
-    requestAnimationFrame(cursorLoop);
+    requestAnimationFrame(
+        cursorLoop
+    );
 
 }
+
 
 cursorLoop();
 
@@ -151,12 +167,27 @@ function backgroundLoop() {
 
 }
 
+
 backgroundLoop();
 
 
 /* ========================================
 SMOOTH 3D TILT
 ======================================== */
+
+/*
+    Lower smoothing value = slower / smoother movement.
+
+    The cards now gently follow the mouse instead
+    of snapping toward it.
+
+    Includes:
+    - Design Capabilities
+    - Pricing
+    - Tools
+    - Socials
+    - Gallery items
+*/
 
 const tiltElements =
     document.querySelectorAll(
@@ -172,6 +203,9 @@ tiltElements.forEach(
 
         let currentRotateX = 0;
         let currentRotateY = 0;
+
+        let targetLift = 0;
+        let currentLift = 0;
 
         let hovering = false;
 
@@ -190,6 +224,11 @@ tiltElements.forEach(
             "pointermove",
             (event) => {
 
+                /*
+                    Don't let buttons/links affect the tilt
+                    calculation.
+                */
+
                 if (
                     event.target.closest("button") ||
                     event.target.closest("a")
@@ -200,6 +239,14 @@ tiltElements.forEach(
 
                 const rect =
                     element.getBoundingClientRect();
+
+
+                if (
+                    rect.width <= 0 ||
+                    rect.height <= 0
+                ) {
+                    return;
+                }
 
 
                 const x =
@@ -222,12 +269,25 @@ tiltElements.forEach(
                     0.5;
 
 
-                targetRotateY =
-                    percentX * 5;
+                /*
+                    Very gentle tilt.
 
+                    Maximum:
+                    4 degrees
+
+                    This keeps the effect subtle
+                    rather than making the cards feel
+                    unstable.
+                */
+
+                targetRotateY =
+                    percentX * 4;
 
                 targetRotateX =
-                    percentY * -5;
+                    percentY * -4;
+
+
+                targetLift = -2;
 
             }
         );
@@ -241,6 +301,7 @@ tiltElements.forEach(
 
                 targetRotateX = 0;
                 targetRotateY = 0;
+                targetLift = 0;
 
             }
         );
@@ -248,31 +309,45 @@ tiltElements.forEach(
 
         function tiltLoop() {
 
+            /*
+                Slow interpolation prevents snapping.
+            */
+
             currentRotateX +=
                 (
                     targetRotateX -
                     currentRotateX
-                ) * 0.075;
+                ) * 0.045;
 
 
             currentRotateY +=
                 (
                     targetRotateY -
                     currentRotateY
-                ) * 0.075;
+                ) * 0.045;
 
 
-            if (
+            currentLift +=
+                (
+                    targetLift -
+                    currentLift
+                ) * 0.055;
+
+
+            const active =
+                hovering ||
                 Math.abs(currentRotateX) > 0.01 ||
                 Math.abs(currentRotateY) > 0.01 ||
-                hovering
-            ) {
+                Math.abs(currentLift) > 0.01;
+
+
+            if (active) {
 
                 element.style.transform =
-                    `perspective(900px)
+                    `perspective(1000px)
                      rotateX(${currentRotateX}deg)
                      rotateY(${currentRotateY}deg)
-                     translateY(${hovering ? -3 : 0}px)`;
+                     translateY(${currentLift}px)`;
 
             } else {
 
@@ -328,7 +403,6 @@ let galleryPosition = 0;
 let galleryLastTime =
     performance.now();
 
-
 const AUTO_SPEED = 18;
 
 
@@ -337,6 +411,11 @@ GALLERY MEASUREMENT
 ======================================== */
 
 function measureGallery() {
+
+    if (!gallery) {
+        return;
+    }
+
 
     gallerySetWidth =
         gallery.scrollWidth / 2;
@@ -381,6 +460,11 @@ function normalizeGallery() {
 
 function renderGallery() {
 
+    if (!gallery) {
+        return;
+    }
+
+
     gallery.style.transform =
         `translate3d(
             ${galleryPosition}px,
@@ -423,7 +507,7 @@ function galleryLoop(currentTime) {
 
     if (
         !isDragging &&
-        !lightbox.classList.contains("active")
+        !lightbox?.classList.contains("active")
     ) {
 
         if (
@@ -520,6 +604,7 @@ galleryWrapper.addEventListener(
 
 
         if (
+            lightbox &&
             lightbox.classList.contains("active")
         ) {
             return;
@@ -774,30 +859,18 @@ galleryWrapper.addEventListener(
 
 
 /* ========================================
-GALLERY WHEEL
-PAGE SCROLL ONLY
+PAGE WHEEL SYSTEM
 ======================================== */
 
-galleryWrapper.addEventListener(
-    "wheel",
-    (event) => {
+/*
+    The browser's normal wheel behaviour is disabled.
 
-        event.preventDefault();
+    Every mouse wheel event is routed through the
+    smooth scrolling system below.
 
-        smoothWheelScroll(
-            event.deltaY
-        );
-
-    },
-    {
-        passive: false
-    }
-);
-
-
-/* ========================================
-PAGE SCROLL MOMENTUM
-======================================== */
+    This prevents the native Windows/browser wheel
+    movement from fighting the custom scrolling.
+*/
 
 let wheelVelocity = 0;
 
@@ -806,37 +879,72 @@ let wheelTarget =
 
 let wheelAnimation = false;
 
+let lastWheelTime =
+    performance.now();
+
+
+const WHEEL_MULTIPLIER =
+    window.innerWidth < 700
+        ? 1.15
+        : 1.25;
+
+
+const WHEEL_FRICTION = 0.88;
+
+const WHEEL_SMOOTHING = 0.075;
+
+const MAX_WHEEL_VELOCITY = 1800;
+
 
 function smoothWheelScroll(delta) {
 
-    const multiplier =
-        window.innerWidth < 700
-            ? 1.25
-            : 1.45;
+    if (
+        lightbox &&
+        lightbox.classList.contains("active")
+    ) {
+        return;
+    }
+
+
+    /*
+        If the user changes direction,
+        don't allow old momentum to fight it.
+    */
+
+    if (
+        Math.sign(delta) !==
+        Math.sign(wheelVelocity) &&
+        Math.abs(delta) > 1
+    ) {
+
+        wheelVelocity *= 0.35;
+
+    }
 
 
     wheelVelocity +=
-        delta * multiplier;
+        delta *
+        WHEEL_MULTIPLIER;
 
 
     wheelVelocity =
         Math.max(
-            -2200,
+            -MAX_WHEEL_VELOCITY,
             Math.min(
-                2200,
+                MAX_WHEEL_VELOCITY,
                 wheelVelocity
             )
         );
 
 
-    wheelTarget =
-        window.scrollY +
-        wheelVelocity;
-
-
     const maxScroll =
         document.documentElement.scrollHeight -
         window.innerHeight;
+
+
+    wheelTarget +=
+        wheelVelocity *
+        0.22;
 
 
     wheelTarget =
@@ -853,7 +961,6 @@ function smoothWheelScroll(delta) {
 
         wheelAnimation = true;
 
-
         requestAnimationFrame(
             wheelLoop
         );
@@ -863,7 +970,24 @@ function smoothWheelScroll(delta) {
 }
 
 
-function wheelLoop() {
+function wheelLoop(time) {
+
+    if (
+        lightbox &&
+        lightbox.classList.contains("active")
+    ) {
+
+        wheelVelocity = 0;
+
+        wheelTarget =
+            window.scrollY;
+
+        wheelAnimation = false;
+
+        return;
+
+    }
+
 
     const current =
         window.scrollY;
@@ -874,20 +998,40 @@ function wheelLoop() {
         current;
 
 
+    /*
+        Smoothly approach the target.
+
+        This is intentionally low so the page
+        does not feel snappy.
+    */
+
+    const movement =
+        distance *
+        WHEEL_SMOOTHING;
+
+
     window.scrollTo(
         0,
-        current +
-        distance * 0.13
+        current + movement
     );
 
 
-    wheelVelocity *= 0.89;
+    /*
+        Gradually remove momentum.
+    */
+
+    wheelVelocity *=
+        WHEEL_FRICTION;
 
 
-    if (
-        Math.abs(distance) > 0.5 ||
-        Math.abs(wheelVelocity) > 0.5
-    ) {
+    const stillMoving =
+        Math.abs(distance) > 0.35 ||
+        Math.abs(wheelVelocity) > 0.35;
+
+
+    if (stillMoving) {
+
+        wheelAnimation = true;
 
         requestAnimationFrame(
             wheelLoop
@@ -901,13 +1045,55 @@ function wheelLoop() {
         );
 
 
-        wheelAnimation = false;
-
         wheelVelocity = 0;
+
+        wheelAnimation = false;
 
     }
 
 }
+
+
+/*
+    GLOBAL wheel handler.
+
+    This replaces the browser's default wheel
+    scrolling everywhere on the page.
+*/
+
+document.addEventListener(
+    "wheel",
+    (event) => {
+
+        if (
+            lightbox &&
+            lightbox.classList.contains("active")
+        ) {
+
+            /*
+                Do absolutely nothing while the
+                lightbox is open.
+            */
+
+            event.preventDefault();
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        smoothWheelScroll(
+            event.deltaY
+        );
+
+    },
+    {
+        passive: false
+    }
+);
 
 
 /* ========================================
@@ -919,18 +1105,65 @@ let currentProject = null;
 let magnifying = false;
 
 
+/*
+    Completely reset the magnifier state.
+*/
+
+function resetMagnifier() {
+
+    magnifying = false;
+
+
+    if (lightboxMagnifier) {
+
+        lightboxMagnifier.classList.remove(
+            "active"
+        );
+
+    }
+
+
+    if (lightboxImage) {
+
+        lightboxImage.style.backgroundSize =
+            "";
+
+        lightboxImage.style.backgroundPosition =
+            "";
+
+    }
+
+}
+
+
 function openProject(item) {
+
+    if (
+        !lightbox ||
+        !lightboxImage
+    ) {
+        return;
+    }
+
 
     currentProject =
         item;
 
 
-    magnifying = false;
+    /*
+        Stop every previous wheel operation
+        before opening the lightbox.
+    */
+
+    wheelVelocity = 0;
+
+    wheelTarget =
+        window.scrollY;
+
+    wheelAnimation = false;
 
 
-    lightboxMagnifier.classList.remove(
-        "active"
-    );
+    resetMagnifier();
 
 
     lightboxImage.style.background =
@@ -942,7 +1175,6 @@ function openProject(item) {
     lightboxImage.style.backgroundSize =
         "";
 
-
     lightboxImage.style.backgroundPosition =
         "";
 
@@ -952,43 +1184,42 @@ function openProject(item) {
     );
 
 
+    /*
+        Lock page scrolling while the lightbox
+        is open.
+    */
+
     document.body.style.overflow =
         "hidden";
-
-
-    /* Prevent leftover page-wheel momentum */
-    wheelVelocity = 0;
-
-    wheelAnimation = false;
 
 }
 
 
 function closeLightbox() {
 
-    magnifying = false;
+    /*
+        Reset everything before restoring
+        normal page scrolling.
+    */
+
+    resetMagnifier();
 
 
-    lightboxMagnifier.classList.remove(
-        "active"
-    );
+    if (lightboxImage) {
+
+        lightboxImage.style.background =
+            "";
+
+    }
 
 
-    lightboxImage.style.backgroundSize =
-        "";
+    if (lightbox) {
 
+        lightbox.classList.remove(
+            "active"
+        );
 
-    lightboxImage.style.backgroundPosition =
-        "";
-
-
-    lightboxImage.style.background =
-        "";
-
-
-    lightbox.classList.remove(
-        "active"
-    );
+    }
 
 
     document.body.style.overflow =
@@ -999,8 +1230,14 @@ function closeLightbox() {
         null;
 
 
-    /* Reset wheel state so page scrolling
-       cannot inherit lightbox movement */
+    /*
+        IMPORTANT:
+
+        Restore wheel state to the exact current
+        page position. This prevents the page from
+        suddenly moving after magnification.
+    */
+
     wheelVelocity = 0;
 
     wheelTarget =
@@ -1008,11 +1245,23 @@ function closeLightbox() {
 
     wheelAnimation = false;
 
+    lastWheelTime =
+        performance.now();
+
+
+    /*
+        Make sure the gallery cannot accidentally
+        inherit old movement from before the
+        lightbox was opened.
+    */
+
+    galleryMomentum = 0;
+
 }
 
 
 /* ========================================
-LIGHTBOX CLOSE BY BACKGROUND CLICK
+LIGHTBOX BACKGROUND CLICK
 ======================================== */
 
 lightbox.addEventListener(
@@ -1041,6 +1290,7 @@ document.addEventListener(
 
         if (
             event.key === "Escape" &&
+            lightbox &&
             lightbox.classList.contains("active")
         ) {
 
@@ -1078,7 +1328,6 @@ lightboxMagnifier.addEventListener(
             lightboxImage.style.backgroundSize =
                 "";
 
-
             lightboxImage.style.backgroundPosition =
                 "";
 
@@ -1105,18 +1354,30 @@ lightboxImage.addEventListener(
             lightboxImage.getBoundingClientRect();
 
 
+        if (
+            rect.width <= 0 ||
+            rect.height <= 0
+        ) {
+            return;
+        }
+
+
         const x =
             (
-                (event.clientX -
-                    rect.left) /
+                (
+                    event.clientX -
+                    rect.left
+                ) /
                 rect.width
             ) * 100;
 
 
         const y =
             (
-                (event.clientY -
-                    rect.top) /
+                (
+                    event.clientY -
+                    rect.top
+                ) /
                 rect.height
             ) * 100;
 
@@ -1144,7 +1405,6 @@ lightboxImage.addEventListener(
         lightboxImage.style.backgroundSize =
             "";
 
-
         lightboxImage.style.backgroundPosition =
             "";
 
@@ -1164,6 +1424,17 @@ function smoothScrollTo(element) {
     if (!element) {
         return;
     }
+
+
+    /*
+        Stop wheel momentum before navigation.
+        Otherwise the wheel system can fight the
+        navigation animation.
+    */
+
+    wheelVelocity = 0;
+
+    wheelAnimation = false;
 
 
     const start =
@@ -1212,15 +1483,15 @@ function smoothScrollTo(element) {
                 (
                     time -
                     startTime
-                ) / duration
+                ) /
+                duration
             );
 
 
         const eased =
             1 -
             Math.pow(
-                1 -
-                progress,
+                1 - progress,
                 5
             );
 
@@ -1246,6 +1517,19 @@ function smoothScrollTo(element) {
 
             scrollAnimation =
                 null;
+
+
+            /*
+                Sync custom wheel position with
+                the final navigation position.
+            */
+
+            wheelTarget =
+                window.scrollY;
+
+            wheelVelocity = 0;
+
+            wheelAnimation = false;
 
         }
 
@@ -1568,6 +1852,19 @@ window.addEventListener(
         measureGallery();
 
         updateScrollProgress();
+
+
+        /*
+            Synchronize custom wheel scrolling
+            with the actual initial position.
+        */
+
+        wheelTarget =
+            window.scrollY;
+
+        wheelVelocity = 0;
+
+        wheelAnimation = false;
 
 
         setTimeout(
