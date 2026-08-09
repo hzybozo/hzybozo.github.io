@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Hzy — Roblox Designer</title>
 
@@ -14,8 +11,11 @@
 
 <body>
 
-    <!-- HERO -->
-    <main class="hero">
+    <!-- ========================================
+         HERO
+    ======================================== -->
+
+    <main class="hero" id="hero">
 
         <div class="hero-content">
 
@@ -32,23 +32,69 @@
                 for Roblox.
             </p>
 
-            <div class="hero-discord">
-                <span>Discord</span>
+
+            <a
+                class="discord-link"
+                href="https://discord.com"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <span class="discord-icon">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M19.54 5.32A16.91 16.91 0 0 0 15.5 4l-.49 1a15.3 15.3 0 0 0-6.02 0L8.5 4a16.91 16.91 0 0 0-4.04 1.32C1.9 9.15 1.2 12.9 1.55 16.6a16.85 16.85 0 0 0 4.95 2.5l1.2-1.65c-.66-.24-1.3-.54-1.9-.9l.46-.35c3.66 1.7 7.62 1.7 11.24 0l.47.35c-.6.36-1.24.66-1.9.9l1.2 1.65a16.85 16.85 0 0 0 4.95-2.5c.41-4.29-.7-8-2.68-11.28ZM8.7 14.52c-1.1 0-2-.99-2-2.2s.88-2.2 2-2.2 2 .99 2 2.2-.89 2.2-2 2.2Zm6.6 0c-1.1 0-2-.99-2-2.2s.88-2.2 2-2.2 2 .99 2 2.2-.89 2.2-2 2.2Z"
+                        />
+                    </svg>
+
+                </span>
+
+                <span class="discord-label">
+                    Discord
+                </span>
 
                 <strong>
                     hzybozo
                 </strong>
-            </div>
+
+            </a>
+
+
+            <button
+                class="pricing-button"
+                id="pricingButton"
+                type="button"
+            >
+
+                <span>
+                    View Pricing
+                </span>
+
+                <span class="button-arrow">
+                    ↓
+                </span>
+
+            </button>
 
         </div>
 
     </main>
 
 
-    <!-- PROJECTS -->
-    <section class="gallery-section">
+    <!-- ========================================
+         PROJECTS
+    ======================================== -->
 
-        <div class="gallery-header">
+    <section
+        class="projects-section"
+        id="projects"
+    >
+
+        <div class="section-header">
 
             <p class="eyebrow">
                 SELECTED WORK
@@ -58,16 +104,15 @@
                 My Projects
             </h2>
 
+            <p class="section-description">
+                A selection of Roblox design work and
+                interactive experiences.
+            </p>
+
         </div>
 
 
-        <!--
-            This container intentionally does NOT scroll.
-
-            The JavaScript moves the gallery track
-            itself, which means the mouse wheel remains
-            completely free for normal website scrolling.
-        -->
+        <!-- GALLERY -->
 
         <div
             class="gallery-wrapper"
@@ -79,53 +124,29 @@
                 id="gallery"
             >
 
-                <div class="gallery-item colour-1">
-                    <div class="image-number">01</div>
-                </div>
+                <div class="gallery-item colour-1"></div>
 
-                <div class="gallery-item colour-2">
-                    <div class="image-number">02</div>
-                </div>
+                <div class="gallery-item colour-2"></div>
 
-                <div class="gallery-item colour-3">
-                    <div class="image-number">03</div>
-                </div>
+                <div class="gallery-item colour-3"></div>
 
-                <div class="gallery-item colour-4">
-                    <div class="image-number">04</div>
-                </div>
+                <div class="gallery-item colour-4"></div>
 
-                <div class="gallery-item colour-5">
-                    <div class="image-number">05</div>
-                </div>
+                <div class="gallery-item colour-5"></div>
 
-                <div class="gallery-item colour-6">
-                    <div class="image-number">06</div>
-                </div>
+                <div class="gallery-item colour-6"></div>
 
-                <div class="gallery-item colour-7">
-                    <div class="image-number">07</div>
-                </div>
+                <div class="gallery-item colour-7"></div>
 
-                <div class="gallery-item colour-8">
-                    <div class="image-number">08</div>
-                </div>
+                <div class="gallery-item colour-8"></div>
 
-                <div class="gallery-item colour-9">
-                    <div class="image-number">09</div>
-                </div>
+                <div class="gallery-item colour-9"></div>
 
-                <div class="gallery-item colour-10">
-                    <div class="image-number">10</div>
-                </div>
+                <div class="gallery-item colour-10"></div>
 
-                <div class="gallery-item colour-11">
-                    <div class="image-number">11</div>
-                </div>
+                <div class="gallery-item colour-11"></div>
 
-                <div class="gallery-item colour-12">
-                    <div class="image-number">12</div>
-                </div>
+                <div class="gallery-item colour-12"></div>
 
             </div>
 
@@ -134,7 +155,286 @@
     </section>
 
 
-    <!-- LIGHTBOX -->
+    <!-- ========================================
+         PRICING
+    ======================================== -->
+
+    <section
+        class="pricing-section"
+        id="pricing"
+    >
+
+        <div class="pricing-container">
+
+            <div class="pricing-heading">
+
+                <p class="eyebrow">
+                    SERVICES
+                </p>
+
+                <h2>
+                    Pricing
+                </h2>
+
+                <p>
+                    Choose the level of quality and turnaround
+                    that fits your project.
+                </p>
+
+            </div>
+
+
+            <div class="pricing-grid">
+
+
+                <!-- BASIC -->
+
+                <article class="pricing-card">
+
+                    <div class="pricing-card-top">
+
+                        <span class="pricing-tier">
+                            BASIC
+                        </span>
+
+                        <h3>
+                            Basic
+                        </h3>
+
+                        <p class="pricing-description">
+                            Clean, simple Roblox design
+                            for straightforward projects.
+                        </p>
+
+                    </div>
+
+
+                    <div class="pricing-details">
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Turnaround
+                            </span>
+
+                            <strong>
+                                4 days
+                            </strong>
+
+                        </div>
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Price
+                            </span>
+
+                            <strong>
+                                £5 / frame
+                            </strong>
+
+                        </div>
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Robux
+                            </span>
+
+                            <strong>
+                                750 / frame
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="pricing-card-line"></div>
+
+                    <span class="pricing-cta">
+                        Good starting point
+                    </span>
+
+                </article>
+
+
+                <!-- ADVANCED -->
+
+                <article
+                    class="pricing-card featured"
+                >
+
+                    <div class="featured-label">
+                        POPULAR
+                    </div>
+
+                    <div class="pricing-card-top">
+
+                        <span class="pricing-tier">
+                            ADVANCED
+                        </span>
+
+                        <h3>
+                            Advanced
+                        </h3>
+
+                        <p class="pricing-description">
+                            More detailed and polished design
+                            with a faster turnaround.
+                        </p>
+
+                    </div>
+
+
+                    <div class="pricing-details">
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Turnaround
+                            </span>
+
+                            <strong>
+                                Within 3 days
+                            </strong>
+
+                        </div>
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Price
+                            </span>
+
+                            <strong>
+                                £10 / frame
+                            </strong>
+
+                        </div>
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Robux
+                            </span>
+
+                            <strong>
+                                1,500 / frame
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="pricing-card-line"></div>
+
+                    <span class="pricing-cta">
+                        Recommended
+                    </span>
+
+                </article>
+
+
+                <!-- EXPERT -->
+
+                <article class="pricing-card expert">
+
+                    <div class="expert-label">
+                        HIGHEST QUALITY
+                    </div>
+
+                    <div class="pricing-card-top">
+
+                        <span class="pricing-tier">
+                            EXPERT
+                        </span>
+
+                        <h3>
+                            Expert
+                        </h3>
+
+                        <p class="pricing-description">
+                            Highest-quality work with a
+                            guaranteed one-day turnaround
+                            per frame.
+                        </p>
+
+                    </div>
+
+
+                    <div class="pricing-details">
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Turnaround
+                            </span>
+
+                            <strong>
+                                1 day / frame
+                            </strong>
+
+                        </div>
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Price
+                            </span>
+
+                            <strong>
+                                £20 / frame
+                            </strong>
+
+                        </div>
+
+                        <div class="pricing-detail">
+
+                            <span>
+                                Robux
+                            </span>
+
+                            <strong>
+                                3,500 / frame
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="pricing-card-line"></div>
+
+                    <span class="pricing-cta">
+                        Maximum quality
+                    </span>
+
+                </article>
+
+            </div>
+
+
+            <div class="negotiation-note">
+
+                <span class="negotiation-dot"></span>
+
+                <p>
+                    Price can be negotiated in DMs depending
+                    on the size and requirements of the project.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         LIGHTBOX
+    ======================================== -->
 
     <div
         class="lightbox"
@@ -158,13 +458,7 @@
             <div
                 class="lightbox-image"
                 id="lightboxImage"
-            >
-
-                <span
-                    id="lightboxNumber"
-                ></span>
-
-            </div>
+            ></div>
 
         </div>
 
