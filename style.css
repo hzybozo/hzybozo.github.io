@@ -9,49 +9,400 @@ html {
 }
 
 body {
-    background: #0a0a0a;
-    color: #ffffff;
+    background: #080808;
+    color: white;
     font-family: Arial, Helvetica, sans-serif;
-    min-height: 100vh;
+    overflow-x: hidden;
 }
+
+/* =========================
+   HERO
+========================= */
 
 .hero {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 40px;
+    padding: 60px;
 }
 
 .hero-content {
-    max-width: 1200px;
     width: 100%;
+    max-width: 1400px;
+    margin: auto;
+}
+
+.eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: #777;
+    margin-bottom: 20px;
 }
 
 .hero h1 {
-    font-size: clamp(4rem, 10vw, 9rem);
+    font-size: clamp(5rem, 13vw, 13rem);
+    line-height: 0.82;
+    letter-spacing: -0.075em;
+    font-weight: 700;
+}
+
+.hero-description {
+    margin-top: 45px;
+    max-width: 560px;
+    color: #888;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   GALLERY SECTION
+========================= */
+
+.gallery-section {
+    padding: 120px 0 160px;
+}
+
+.gallery-header {
+    width: calc(100% - 120px);
+    max-width: 1400px;
+    margin: 0 auto 50px;
+
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+}
+
+.gallery-header h2 {
+    font-size: clamp(3rem, 7vw, 7rem);
     line-height: 0.9;
     letter-spacing: -0.06em;
 }
 
-.hero p {
-    margin-top: 30px;
-    max-width: 600px;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    color: #999;
+.drag-hint {
+    color: #666;
+    font-size: 14px;
 }
 
+
+/* =========================
+   HORIZONTAL GALLERY
+========================= */
+
+.gallery-wrapper {
+    width: 100%;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+}
+
+.gallery-wrapper:active {
+    cursor: grabbing;
+}
+
+.gallery {
+    display: flex;
+    gap: 22px;
+
+    width: max-content;
+
+    padding: 20px 60px;
+
+    will-change: transform;
+}
+
+
+/* =========================
+   IMAGE CARDS
+========================= */
+
+.gallery-item {
+    width: min(42vw, 520px);
+    height: min(58vw, 650px);
+
+    flex-shrink: 0;
+
+    border-radius: 4px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    cursor: pointer;
+
+    transform: scale(1);
+
+    transition:
+        transform 0.45s cubic-bezier(.16,1,.3,1),
+        filter 0.45s ease;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.25);
+}
+
+.gallery-item:hover {
+    transform: scale(0.97);
+    filter: brightness(1.08);
+}
+
+.gallery-item::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.15),
+            transparent 40%
+        );
+
+    pointer-events: none;
+}
+
+.image-number {
+    position: absolute;
+
+    top: 24px;
+    left: 24px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    mix-blend-mode: difference;
+    color: white;
+
+    z-index: 2;
+}
+
+
+/* =========================
+   PLACEHOLDER COLOURS
+========================= */
+
+.colour-1 {
+    background: #ff5c5c;
+}
+
+.colour-2 {
+    background: #5c7cff;
+}
+
+.colour-3 {
+    background: #b65cff;
+}
+
+.colour-4 {
+    background: #5cffb1;
+}
+
+.colour-5 {
+    background: #ff9f5c;
+}
+
+.colour-6 {
+    background: #5ce1ff;
+}
+
+.colour-7 {
+    background: #ff5cd6;
+}
+
+.colour-8 {
+    background: #b5ff5c;
+}
+
+.colour-9 {
+    background: #745cff;
+}
+
+.colour-10 {
+    background: #ffdd5c;
+}
+
+.colour-11 {
+    background: #5cffa4;
+}
+
+.colour-12 {
+    background: #ff5c9d;
+}
+
+
+/* =========================
+   LIGHTBOX
+========================= */
+
+.lightbox {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px;
+
+    background: rgba(0,0,0,0.75);
+
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.4s ease,
+        visibility 0.4s ease;
+}
+
+.lightbox.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-content {
+    width: min(85vw, 1000px);
+    height: min(80vh, 750px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform: scale(0.85);
+
+    transition:
+        transform 0.6s cubic-bezier(.16,1,.3,1);
+}
+
+.lightbox.active .lightbox-content {
+    transform: scale(1);
+}
+
+.lightbox-image {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    padding: 30px;
+
+    position: relative;
+
+    border-radius: 5px;
+
+    box-shadow:
+        0 40px 120px rgba(0,0,0,0.5);
+}
+
+#lightboxNumber {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    mix-blend-mode: difference;
+}
+
+
+/* =========================
+   CLOSE BUTTON
+========================= */
+
+.lightbox-close {
+    position: absolute;
+
+    top: 25px;
+    right: 30px;
+
+    width: 55px;
+    height: 55px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.1);
+
+    color: white;
+
+    font-size: 32px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    z-index: 10;
+
+    transition:
+        transform 0.3s ease,
+        background 0.3s ease;
+}
+
+.lightbox-close:hover {
+    transform: rotate(90deg) scale(1.1);
+    background: rgba(255,255,255,0.2);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 700px) {
+
     .hero {
-        padding: 25px;
+        padding: 30px;
     }
 
-    .hero h1 {
-        font-size: clamp(3rem, 16vw, 6rem);
+    .hero-description {
+        margin-top: 30px;
+        font-size: 16px;
     }
 
-    .hero p {
-        font-size: 1rem;
+    .gallery-section {
+        padding: 80px 0 100px;
+    }
+
+    .gallery-header {
+        width: calc(100% - 60px);
+        margin-bottom: 30px;
+
+        display: block;
+    }
+
+    .gallery-header h2 {
+        font-size: 16vw;
+    }
+
+    .drag-hint {
+        display: block;
+        margin-top: 20px;
+    }
+
+    .gallery {
+        gap: 15px;
+        padding: 15px 30px;
+    }
+
+    .gallery-item {
+        width: 72vw;
+        height: 100vw;
+    }
+
+    .lightbox {
+        padding: 20px;
+    }
+
+    .lightbox-content {
+        width: 90vw;
+        height: 75vh;
+    }
+
+    .lightbox-close {
+        top: 15px;
+        right: 15px;
     }
 }
