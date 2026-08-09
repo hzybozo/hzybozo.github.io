@@ -1,127 +1,47 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+```
+<title>Hzy — Roblox Designer</title>
 
-    <title>Hzy — Roblox Designer</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+<link rel="stylesheet" href="style.css">
+```
 
 </head>
 
-
 <body>
 
-
-<!-- =====================================================
-     NAVIGATION
-===================================================== -->
-
-<nav>
-
-    <button
-        class="nav-item active"
-        data-target="home"
-        type="button"
-    >
-        <span class="nav-symbol">⌂</span>
-        <span>Home</span>
-    </button>
-
-
-    <button
-        class="nav-item"
-        data-target="examples"
-        type="button"
-    >
-        <span class="nav-symbol">▦</span>
-        <span>Examples</span>
-    </button>
-
-
-    <button
-        class="nav-item"
-        data-target="builds"
-        type="button"
-    >
-        <span class="nav-symbol">◆</span>
-        <span>UI Builds</span>
-    </button>
-
-
-    <button
-        class="nav-item"
-        data-target="pricing"
-        type="button"
-    >
-        <span class="nav-symbol">◇</span>
-        <span>Pricing</span>
-    </button>
-
-
-    <button
-        class="nav-item"
-        data-target="sources"
-        type="button"
-    >
-        <span class="nav-symbol">✦</span>
-        <span>Tools</span>
-    </button>
-
-
-    <button
-        class="nav-item"
-        data-target="faq"
-        type="button"
-    >
-        <span class="nav-symbol">?</span>
-        <span>FAQ</span>
-    </button>
-
-
-    <button
-        class="nav-item"
-        data-target="socials"
-        type="button"
-    >
-        <span class="nav-symbol">↗</span>
-        <span>Socials</span>
-    </button>
-
-</nav>
-
-
-<!-- =====================================================
-     CURSOR
-===================================================== -->
+```
+<!-- ========================================
+CURSOR
+======================================== -->
 
 <div class="cursor-dot"></div>
 <div class="cursor-glow"></div>
 
-<div
-    class="scroll-progress"
-    id="scrollProgress"
-></div>
+
+<!-- ========================================
+BACKGROUND
+======================================== -->
+
+<div class="background-orb orb-one"></div>
+<div class="background-orb orb-two"></div>
+<div class="background-grid"></div>
 
 
-<!-- =====================================================
-     HOME
-===================================================== -->
+<!-- ========================================
+HOME
+======================================== -->
 
 <section
+    class="hero section-reveal"
     id="home"
     data-section="home"
-    class="hero section-reveal"
 >
 
     <div class="hero-content">
@@ -157,7 +77,6 @@
                     id="socialsHeroButton"
                     type="button"
                 >
-
                     <span class="button-icon">
                         ↗
                     </span>
@@ -165,16 +84,13 @@
                     <span>
                         Socials
                     </span>
-
                 </button>
-
 
                 <button
                     class="pricing-button magnetic-button"
                     id="pricingButton"
                     type="button"
                 >
-
                     <span>
                         View Pricing
                     </span>
@@ -182,7 +98,6 @@
                     <span class="button-arrow">
                         ↓
                     </span>
-
                 </button>
 
             </div>
@@ -194,14 +109,14 @@
 </section>
 
 
-<!-- =====================================================
-     EXAMPLES
-===================================================== -->
+<!-- ========================================
+EXAMPLES
+======================================== -->
 
 <section
+    class="projects-section section-reveal"
     id="examples"
     data-section="examples"
-    class="section-reveal"
 >
 
     <div class="section-header">
@@ -217,7 +132,6 @@
             </h2>
 
         </div>
-
 
         <div class="section-introduction">
 
@@ -246,186 +160,185 @@
             id="gallery"
         >
 
-
-            <div
-                class="gallery-item"
-                style="background-image: url('images/work1.png');"
-            >
-
+            <div class="gallery-item colour-1">
                 <button
                     class="zoom-trigger"
                     type="button"
                     aria-label="Inspect image"
                 >
-
                     <svg viewBox="0 0 24 24">
-                        <circle
-                            cx="10.8"
-                            cy="10.8"
-                            r="6.3"
-                        ></circle>
-
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
                         <path d="M16 16l5 5"></path>
-
                         <path d="M10.8 7.8v6"></path>
-
                         <path d="M7.8 10.8h6"></path>
                     </svg>
-
                 </button>
-
             </div>
 
-
-            <div
-                class="gallery-item"
-                style="background-image: url('images/work2.png');"
-            >
-
+            <div class="gallery-item colour-2">
                 <button
                     class="zoom-trigger"
                     type="button"
                     aria-label="Inspect image"
                 >
-
                     <svg viewBox="0 0 24 24">
-                        <circle
-                            cx="10.8"
-                            cy="10.8"
-                            r="6.3"
-                        ></circle>
-
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
                         <path d="M16 16l5 5"></path>
-
                         <path d="M10.8 7.8v6"></path>
-
                         <path d="M7.8 10.8h6"></path>
                     </svg>
-
                 </button>
-
             </div>
 
-
-            <div
-                class="gallery-item"
-                style="background-image: url('images/work3.png');"
-            >
-
+            <div class="gallery-item colour-3">
                 <button
                     class="zoom-trigger"
                     type="button"
                     aria-label="Inspect image"
                 >
-
                     <svg viewBox="0 0 24 24">
-                        <circle
-                            cx="10.8"
-                            cy="10.8"
-                            r="6.3"
-                        ></circle>
-
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
                         <path d="M16 16l5 5"></path>
-
                         <path d="M10.8 7.8v6"></path>
-
                         <path d="M7.8 10.8h6"></path>
                     </svg>
-
                 </button>
-
             </div>
 
-
-            <div
-                class="gallery-item"
-                style="background-image: url('images/work4.png');"
-            >
-
+            <div class="gallery-item colour-4">
                 <button
                     class="zoom-trigger"
                     type="button"
                     aria-label="Inspect image"
                 >
-
                     <svg viewBox="0 0 24 24">
-                        <circle
-                            cx="10.8"
-                            cy="10.8"
-                            r="6.3"
-                        ></circle>
-
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
                         <path d="M16 16l5 5"></path>
-
                         <path d="M10.8 7.8v6"></path>
-
                         <path d="M7.8 10.8h6"></path>
                     </svg>
-
                 </button>
-
             </div>
 
-
-            <div
-                class="gallery-item"
-                style="background-image: url('images/work5.png');"
-            >
-
+            <div class="gallery-item colour-5">
                 <button
                     class="zoom-trigger"
                     type="button"
                     aria-label="Inspect image"
                 >
-
                     <svg viewBox="0 0 24 24">
-                        <circle
-                            cx="10.8"
-                            cy="10.8"
-                            r="6.3"
-                        ></circle>
-
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
                         <path d="M16 16l5 5"></path>
-
                         <path d="M10.8 7.8v6"></path>
-
                         <path d="M7.8 10.8h6"></path>
                     </svg>
-
                 </button>
-
             </div>
 
-
-            <div
-                class="gallery-item"
-                style="background-image: url('images/work6.png');"
-            >
-
+            <div class="gallery-item colour-6">
                 <button
                     class="zoom-trigger"
                     type="button"
                     aria-label="Inspect image"
                 >
-
                     <svg viewBox="0 0 24 24">
-                        <circle
-                            cx="10.8"
-                            cy="10.8"
-                            r="6.3"
-                        ></circle>
-
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
                         <path d="M16 16l5 5"></path>
-
                         <path d="M10.8 7.8v6"></path>
-
                         <path d="M7.8 10.8h6"></path>
                     </svg>
-
                 </button>
-
             </div>
 
+            <div class="gallery-item colour-7">
+                <button
+                    class="zoom-trigger"
+                    type="button"
+                    aria-label="Inspect image"
+                >
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
+                        <path d="M16 16l5 5"></path>
+                        <path d="M10.8 7.8v6"></path>
+                        <path d="M7.8 10.8h6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="gallery-item colour-8">
+                <button
+                    class="zoom-trigger"
+                    type="button"
+                    aria-label="Inspect image"
+                >
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
+                        <path d="M16 16l5 5"></path>
+                        <path d="M10.8 7.8v6"></path>
+                        <path d="M7.8 10.8h6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="gallery-item colour-9">
+                <button
+                    class="zoom-trigger"
+                    type="button"
+                    aria-label="Inspect image"
+                >
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
+                        <path d="M16 16l5 5"></path>
+                        <path d="M10.8 7.8v6"></path>
+                        <path d="M7.8 10.8h6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="gallery-item colour-10">
+                <button
+                    class="zoom-trigger"
+                    type="button"
+                    aria-label="Inspect image"
+                >
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
+                        <path d="M16 16l5 5"></path>
+                        <path d="M10.8 7.8v6"></path>
+                        <path d="M7.8 10.8h6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="gallery-item colour-11">
+                <button
+                    class="zoom-trigger"
+                    type="button"
+                    aria-label="Inspect image"
+                >
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
+                        <path d="M16 16l5 5"></path>
+                        <path d="M10.8 7.8v6"></path>
+                        <path d="M7.8 10.8h6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="gallery-item colour-12">
+                <button
+                    class="zoom-trigger"
+                    type="button"
+                    aria-label="Inspect image"
+                >
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.3"></circle>
+                        <path d="M16 16l5 5"></path>
+                        <path d="M10.8 7.8v6"></path>
+                        <path d="M7.8 10.8h6"></path>
+                    </svg>
+                </button>
+            </div>
 
         </div>
 
@@ -434,14 +347,14 @@
 </section>
 
 
-<!-- =====================================================
-     UI BUILDS / DESIGN CAPABILITIES
-===================================================== -->
+<!-- ========================================
+DESIGN CAPABILITIES
+======================================== -->
 
 <section
+    class="builds-section section-reveal"
     id="builds"
     data-section="builds"
-    class="section-reveal"
 >
 
     <div class="builds-heading">
@@ -465,12 +378,7 @@
 
     <div class="folder-grid">
 
-
-        <button
-            class="folder-card tilt-frame"
-            type="button"
-        >
-
+        <button class="folder-card tilt-frame" type="button">
             <div class="folder-tab"></div>
 
             <div class="folder-icon">
@@ -484,15 +392,10 @@
             <p>
                 Main menus, navigation and game hubs.
             </p>
-
         </button>
 
 
-        <button
-            class="folder-card tilt-frame"
-            type="button"
-        >
-
+        <button class="folder-card tilt-frame" type="button">
             <div class="folder-tab"></div>
 
             <div class="folder-icon">
@@ -506,15 +409,10 @@
             <p>
                 Gameplay information and status displays.
             </p>
-
         </button>
 
 
-        <button
-            class="folder-card tilt-frame"
-            type="button"
-        >
-
+        <button class="folder-card tilt-frame" type="button">
             <div class="folder-tab"></div>
 
             <div class="folder-icon">
@@ -528,15 +426,10 @@
             <p>
                 Products, currencies and purchase interfaces.
             </p>
-
         </button>
 
 
-        <button
-            class="folder-card tilt-frame"
-            type="button"
-        >
-
+        <button class="folder-card tilt-frame" type="button">
             <div class="folder-tab"></div>
 
             <div class="folder-icon">
@@ -550,15 +443,10 @@
             <p>
                 Item management and collection systems.
             </p>
-
         </button>
 
 
-        <button
-            class="folder-card tilt-frame"
-            type="button"
-        >
-
+        <button class="folder-card tilt-frame" type="button">
             <div class="folder-tab"></div>
 
             <div class="folder-icon">
@@ -572,15 +460,10 @@
             <p>
                 Rewards, notifications and interactive panels.
             </p>
-
         </button>
 
 
-        <button
-            class="folder-card tilt-frame"
-            type="button"
-        >
-
+        <button class="folder-card tilt-frame" type="button">
             <div class="folder-tab"></div>
 
             <div class="folder-icon">
@@ -594,23 +477,21 @@
             <p>
                 Bespoke interfaces for unique game systems.
             </p>
-
         </button>
-
 
     </div>
 
 </section>
 
 
-<!-- =====================================================
-     PRICING
-===================================================== -->
+<!-- ========================================
+PRICING
+======================================== -->
 
 <section
+    class="pricing-section section-reveal"
     id="pricing"
     data-section="pricing"
-    class="section-reveal"
 >
 
     <div class="pricing-container">
@@ -642,10 +523,7 @@
 
         <div class="pricing-grid">
 
-
-            <article
-                class="pricing-card tilt-frame"
-            >
+            <article class="pricing-card tilt-frame">
 
                 <span class="pricing-tier">
                     BASIC
@@ -696,9 +574,7 @@
             </article>
 
 
-            <article
-                class="pricing-card featured tilt-frame"
-            >
+            <article class="pricing-card featured tilt-frame">
 
                 <span class="popular-label">
                     POPULAR
@@ -754,9 +630,7 @@
             </article>
 
 
-            <article
-                class="pricing-card expert tilt-frame"
-            >
+            <article class="pricing-card expert tilt-frame">
 
                 <div class="expert-glow"></div>
 
@@ -813,7 +687,6 @@
 
             </article>
 
-
         </div>
 
 
@@ -832,13 +705,8 @@
             id="contactButton"
             type="button"
         >
-
             Contact Me
-
-            <span>
-                ↓
-            </span>
-
+            <span>↓</span>
         </button>
 
     </div>
@@ -846,14 +714,14 @@
 </section>
 
 
-<!-- =====================================================
-     TOOLS
-===================================================== -->
+<!-- ========================================
+TOOLS
+======================================== -->
 
 <section
+    class="tools-section section-reveal"
     id="sources"
     data-section="sources"
-    class="section-reveal"
 >
 
     <div class="tools-heading">
@@ -876,7 +744,6 @@
 
 
     <div class="tools-grid">
-
 
         <div class="tool-card tilt-frame">
 
@@ -929,20 +796,19 @@
 
         </div>
 
-
     </div>
 
 </section>
 
 
-<!-- =====================================================
-     FAQ
-===================================================== -->
+<!-- ========================================
+FAQ
+======================================== -->
 
 <section
+    class="faq-section section-reveal"
     id="faq"
     data-section="faq"
-    class="section-reveal"
 >
 
     <div class="faq-heading">
@@ -964,7 +830,6 @@
 
 
     <div class="faq-list">
-
 
         <details class="faq-item">
 
@@ -1098,20 +963,19 @@
 
         </details>
 
-
     </div>
 
 </section>
 
 
-<!-- =====================================================
-     SOCIALS
-===================================================== -->
+<!-- ========================================
+SOCIALS
+======================================== -->
 
 <section
+    class="socials-section section-reveal"
     id="socials"
     data-section="socials"
-    class="section-reveal"
 >
 
     <div class="socials-heading">
@@ -1134,7 +998,6 @@
 
     <div class="social-grid">
 
-
         <a
             class="social-card tilt-frame"
             href="https://www.roblox.com/users/2715279567/profile"
@@ -1151,9 +1014,7 @@
                 <strong>hzy_bozo</strong>
             </div>
 
-            <span class="social-arrow">
-                ↗
-            </span>
+            <span class="social-arrow">↗</span>
 
         </a>
 
@@ -1174,9 +1035,7 @@
                 <strong>hzybozo</strong>
             </div>
 
-            <span class="social-arrow">
-                ↗
-            </span>
+            <span class="social-arrow">↗</span>
 
         </a>
 
@@ -1203,21 +1062,18 @@
                 <strong>hzybozo</strong>
             </div>
 
-            <span class="social-arrow">
-                ↗
-            </span>
+            <span class="social-arrow">↗</span>
 
         </a>
-
 
     </div>
 
 </section>
 
 
-<!-- =====================================================
-     LIGHTBOX
-===================================================== -->
+<!-- ========================================
+LIGHTBOX
+======================================== -->
 
 <div
     class="lightbox"
@@ -1230,7 +1086,6 @@
             class="lightbox-image"
             id="lightboxImage"
         ></div>
-
 
         <button
             class="lightbox-magnifier"
@@ -1262,7 +1117,113 @@
 </div>
 
 
+<!-- ========================================
+CUSTOM SCROLLBAR
+======================================== -->
+
+<div class="custom-scrollbar">
+
+    <div
+        class="scroll-progress"
+        id="scrollProgress"
+    ></div>
+
+</div>
+
+
+<!-- ========================================
+BOTTOM NAV
+======================================== -->
+
+<nav class="bottom-nav">
+
+    <button
+        class="nav-item active"
+        data-target="home"
+        type="button"
+    >
+        <span class="nav-symbol">⌂</span>
+        <span>Home</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        data-target="examples"
+        type="button"
+    >
+        <span class="nav-symbol">▦</span>
+        <span>Examples</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        data-target="builds"
+        type="button"
+    >
+        <span class="nav-symbol">◆</span>
+        <span>UI Builds</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        data-target="pricing"
+        type="button"
+    >
+        <span class="nav-symbol">◇</span>
+        <span>Pricing</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        data-target="sources"
+        type="button"
+    >
+        <span class="nav-symbol">✦</span>
+        <span>Tools</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        data-target="faq"
+        type="button"
+    >
+        <span class="nav-symbol">?</span>
+        <span>FAQ</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        data-target="socials"
+        type="button"
+    >
+        <span class="nav-symbol">↗</span>
+        <span>Socials</span>
+    </button>
+
+</nav>
+
+
+<!-- ========================================
+FOOTER
+======================================== -->
+
+<footer>
+
+    <p>
+        © 2026 Hzy. Roblox UI Design & Visual Experiences.
+    </p>
+
+</footer>
+
+
 <script src="script.js"></script>
+```
 
 </body>
 
