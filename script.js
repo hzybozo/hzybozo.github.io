@@ -7,13 +7,16 @@ const pricingSection = document.getElementById("pricing");
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightboxImage");
 const lightboxClose = document.getElementById("lightboxClose");
+const lightboxMagnifier = document.getElementById("lightboxMagnifier");
 
 const navItems = document.querySelectorAll(".nav-item");
 const sections = document.querySelectorAll("[data-section]");
 
+const folderCards = document.querySelectorAll("[data-social-scroll]");
+
 
 /* ========================================
-   GALLERY SETUP
+   GALLERY
 ======================================== */
 
 const originalItems = Array.from(
@@ -24,21 +27,22 @@ originalItems.forEach((item) => {
     gallery.appendChild(item.cloneNode(true));
 });
 
-
 let singleSetWidth = 0;
 let position = 0;
 
 function measureGallery() {
+
     singleSetWidth = gallery.scrollWidth / 2;
 
-    if (singleSetWidth > 0) {
-        normalizePosition();
-        renderGallery();
-    }
+    normalizeGallery();
+    renderGallery();
 }
 
-function normalizePosition() {
-    if (!singleSetWidth) return;
+function normalizeGallery() {
+
+    if (!singleSetWidth) {
+        return;
+    }
 
     while (position <= -singleSetWidth) {
         position += singleSetWidth;
@@ -50,6 +54,7 @@ function normalizePosition() {
 }
 
 function renderGallery() {
+
     gallery.style.transform =
         `translate3d(${position}px, 0, 0)`;
 }
@@ -59,10 +64,8 @@ window.addEventListener("resize", measureGallery);
 
 
 /* ========================================
-   AUTO SCROLL + MOMENTUM
+   GALLERY MOTION
 ======================================== */
-
-const AUTO_SPEED = 24;
 
 let isDragging = false;
 let pointerId = null;
@@ -76,39 +79,42 @@ let lastPointerTime = 0;
 let dragVelocity = 0;
 let momentum = 0;
 
-let hasDragged = false;
 let pressedItem = null;
+let hasDragged = false;
 
-const MOMENTUM_MULTIPLIER = 4.8;
+const AUTO_SPEED = 18;
+const MOMENTUM_MULTIPLIER = 2.0;
 const MOMENTUM_FRICTION = 0.975;
-const MAX_MOMENTUM = 8000;
+const MAX_MOMENTUM = 2600;
 
-let lastTime = performance.now();
+let lastFrameTime = performance.now();
 
-function animationLoop(currentTime) {
+function galleryLoop(currentTime) {
 
-    const delta = Math.min(
-        currentTime - lastTime,
-        50
-    );
+    const delta =
+        Math.min(
+            currentTime - lastFrameTime,
+            50
+        );
 
-    lastTime = currentTime;
+    lastFrameTime = currentTime;
 
     if (
         !isDragging &&
         !lightbox.classList.contains("active")
     ) {
 
-        if (Math.abs(momentum) > 0.1) {
+        if (Math.abs(momentum) > .1) {
 
             position +=
                 momentum *
                 (delta / 1000);
 
-            momentum *= Math.pow(
-                MOMENTUM_FRICTION,
-                delta / 16.67
-            );
+            momentum *=
+                Math.pow(
+                    MOMENTUM_FRICTION,
+                    delta / 16.67
+                );
 
         } else {
 
@@ -120,31 +126,35 @@ function animationLoop(currentTime) {
         }
     }
 
-    normalizePosition();
+    normalizeGallery();
     renderGallery();
 
-    requestAnimationFrame(animationLoop);
+    requestAnimationFrame(galleryLoop);
 }
 
-requestAnimationFrame(animationLoop);
+requestAnimationFrame(galleryLoop);
 
 
 /* ========================================
-   POINTER DOWN
+   GALLERY DRAG
 ======================================== */
 
 galleryWrapper.addEventListener(
     "pointerdown",
     (event) => {
 
-        if (event.button !== 0) return;
+        if (event.button !== 0) {
+            return;
+        }
+
+        if (event.target.closest(".zoom-trigger")) {
+            return;
+        }
 
         isDragging = true;
-
         pointerId = event.pointerId;
 
         hasDragged = false;
-
         momentum = 0;
 
         dragStartX = event.clientX;
@@ -155,28 +165,21 @@ galleryWrapper.addEventListener(
 
         dragVelocity = 0;
 
-        galleryWrapper.classList.add("dragging");
-
-        pressedItem = event.target.closest(
-            ".gallery-item"
-        );
+        pressedItem =
+            event.target.closest(".gallery-item");
 
         if (pressedItem) {
             pressedItem.classList.add("pressing");
         }
 
+        galleryWrapper.classList.add("dragging");
+
         galleryWrapper.setPointerCapture(
             event.pointerId
         );
-
-        event.preventDefault();
     }
 );
 
-
-/* ========================================
-   POINTER MOVE
-======================================== */
 
 galleryWrapper.addEventListener(
     "pointermove",
@@ -205,7 +208,7 @@ galleryWrapper.addEventListener(
         position =
             dragStartPosition + distance;
 
-        normalizePosition();
+        normalizeGallery();
         renderGallery();
 
         const elapsed =
@@ -213,16 +216,12 @@ galleryWrapper.addEventListener(
 
         if (elapsed > 0) {
 
-            const instantVelocity =
+            dragVelocity =
                 (
                     event.clientX -
                     lastPointerX
                 ) /
                 (elapsed / 1000);
-
-            dragVelocity =
-                dragVelocity * 0.65 +
-                instantVelocity * 0.35;
         }
 
         lastPointerX = event.clientX;
@@ -231,11 +230,7 @@ galleryWrapper.addEventListener(
 );
 
 
-/* ========================================
-   POINTER RELEASE
-======================================== */
-
-function releaseDrag(event) {
+function releaseGalleryDrag(event) {
 
     if (
         !isDragging ||
@@ -246,17 +241,12 @@ function releaseDrag(event) {
 
     isDragging = false;
 
-    galleryWrapper.classList.remove(
-        "dragging"
-    );
+    galleryWrapper.classList.remove("dragging");
 
     if (
         pressedItem &&
         !hasDragged
     ) {
-        pressedItem.classList.remove(
-            "pressing"
-        );
 
         openProject(pressedItem);
     }
@@ -267,19 +257,18 @@ function releaseDrag(event) {
             dragVelocity *
             MOMENTUM_MULTIPLIER;
 
-        momentum = Math.max(
-            -MAX_MOMENTUM,
-            Math.min(
-                MAX_MOMENTUM,
-                momentum
-            )
-        );
+        momentum =
+            Math.max(
+                -MAX_MOMENTUM,
+                Math.min(
+                    MAX_MOMENTUM,
+                    momentum
+                )
+            );
     }
 
     if (pressedItem) {
-        pressedItem.classList.remove(
-            "pressing"
-        );
+        pressedItem.classList.remove("pressing");
     }
 
     pressedItem = null;
@@ -289,12 +278,12 @@ function releaseDrag(event) {
 
 galleryWrapper.addEventListener(
     "pointerup",
-    releaseDrag
+    releaseGalleryDrag
 );
 
 galleryWrapper.addEventListener(
     "pointercancel",
-    releaseDrag
+    releaseGalleryDrag
 );
 
 
@@ -304,44 +293,51 @@ galleryWrapper.addEventListener(
 
 function openProject(item) {
 
-    lightboxImage.className =
-        "lightbox-image";
+    const background =
+        window.getComputedStyle(item).background;
 
-    for (const className of item.classList) {
-
-        if (className.startsWith("colour-")) {
-            lightboxImage.classList.add(
-                className
-            );
-        }
-    }
+    lightboxImage.style.background = background;
 
     lightbox.classList.add("active");
 
+    lightboxMagnifier.classList.remove("active");
+    lightboxImage.classList.remove("magnified");
+
     document.body.style.overflow = "hidden";
 }
+
 
 function closeLightbox() {
 
     lightbox.classList.remove("active");
 
+    lightboxMagnifier.classList.remove("active");
+    lightboxImage.classList.remove("magnified");
+
+    removeZoomLens();
+
     document.body.style.overflow = "";
 }
+
 
 lightboxClose.addEventListener(
     "click",
     closeLightbox
 );
 
+
 lightbox.addEventListener(
     "click",
     (event) => {
 
-        if (event.target === lightbox) {
+        if (
+            event.target === lightbox
+        ) {
             closeLightbox();
         }
     }
 );
+
 
 document.addEventListener(
     "keydown",
@@ -355,196 +351,261 @@ document.addEventListener(
 
 
 /* ========================================
-   MAGNIFYING GLASS
+   LIGHTBOX MAGNIFIER
 ======================================== */
 
-let zoomingItem = null;
-let zoomActive = false;
+let zoomLens = null;
+let magnifierActive = false;
 
-const zoomButtons =
-    document.querySelectorAll(".zoom-trigger");
 
-zoomButtons.forEach((button) => {
+function createZoomLens() {
 
-    button.addEventListener(
-        "pointerdown",
-        (event) => {
-            event.stopPropagation();
-        }
-    );
+    if (zoomLens) {
+        return;
+    }
 
-    button.addEventListener(
-        "click",
-        (event) => {
+    zoomLens =
+        document.createElement("div");
 
-            event.stopPropagation();
+    zoomLens.className = "zoom-lens";
 
-            const item =
-                button.closest(".gallery-item");
-
-            if (!item) return;
-
-            activateZoom(item, event);
-        }
-    );
-});
-
-function activateZoom(item, event) {
-
-    zoomingItem = item;
-    zoomActive = true;
-
-    item.classList.add("zooming");
-
-    updateZoom(event, item);
+    document.body.appendChild(zoomLens);
 }
 
-function updateZoom(event, item) {
 
-    const rect =
-        item.getBoundingClientRect();
+function removeZoomLens() {
 
-    const x =
-        event.clientX - rect.left;
+    if (!zoomLens) {
+        return;
+    }
 
-    const y =
-        event.clientY - rect.top;
-
-    const percentX =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                (x / rect.width) * 100
-            )
-        );
-
-    const percentY =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                (y / rect.height) * 100
-            )
-        );
-
-    item.style.transformOrigin =
-        `${percentX}% ${percentY}%`;
-
-    item.style.transform =
-        "scale(1.5)";
+    zoomLens.remove();
+    zoomLens = null;
 }
 
-galleryWrapper.addEventListener(
+
+function toggleMagnifier() {
+
+    magnifierActive = !magnifierActive;
+
+    lightboxMagnifier.classList.toggle(
+        "active",
+        magnifierActive
+    );
+
+    lightboxImage.classList.toggle(
+        "magnified",
+        magnifierActive
+    );
+
+    if (magnifierActive) {
+
+        createZoomLens();
+
+        zoomLens.classList.add("active");
+
+    } else {
+
+        if (zoomLens) {
+            zoomLens.classList.remove("active");
+        }
+    }
+}
+
+
+lightboxMagnifier.addEventListener(
+    "click",
+    (event) => {
+
+        event.stopPropagation();
+
+        toggleMagnifier();
+    }
+);
+
+
+lightboxImage.addEventListener(
     "pointermove",
     (event) => {
 
-        if (!zoomActive || !zoomingItem) {
-            return;
-        }
-
         if (
-            event.target.closest(
-                ".zoom-trigger"
-            )
+            !magnifierActive ||
+            !zoomLens
         ) {
             return;
         }
 
-        updateZoom(
-            event,
-            zoomingItem
-        );
+        const rect =
+            lightboxImage.getBoundingClientRect();
+
+        const x =
+            event.clientX - rect.left;
+
+        const y =
+            event.clientY - rect.top;
+
+        const percentX =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    (x / rect.width) * 100
+                )
+            );
+
+        const percentY =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    (y / rect.height) * 100
+                )
+            );
+
+        zoomLens.style.left =
+            `${event.clientX}px`;
+
+        zoomLens.style.top =
+            `${event.clientY}px`;
+
+        zoomLens.style.background =
+            lightboxImage.style.background;
+
+        zoomLens.style.backgroundSize =
+            "250% 250%";
+
+        zoomLens.style.backgroundPosition =
+            `${percentX}% ${percentY}%`;
     }
 );
 
-function deactivateZoom() {
 
-    if (!zoomingItem) return;
-
-    zoomingItem.style.transform = "";
-    zoomingItem.style.transformOrigin = "";
-
-    zoomingItem.classList.remove(
-        "zooming"
-    );
-
-    zoomingItem = null;
-    zoomActive = false;
-}
-
-document.addEventListener(
-    "pointerdown",
-    (event) => {
-
-        if (!zoomActive) return;
-
-        if (
-            event.target.closest(
-                ".zoom-trigger"
-            )
-        ) {
-            return;
-        }
-
-        if (
-            event.target.closest(
-                ".gallery-item"
-            )
-        ) {
-            return;
-        }
-
-        deactivateZoom();
-    }
-);
-
-galleryWrapper.addEventListener(
+lightboxImage.addEventListener(
     "pointerleave",
     () => {
 
-        if (zoomActive) {
-            deactivateZoom();
+        if (zoomLens) {
+            zoomLens.classList.remove("active");
+        }
+    }
+);
+
+
+lightboxImage.addEventListener(
+    "pointerenter",
+    () => {
+
+        if (
+            magnifierActive &&
+            zoomLens
+        ) {
+            zoomLens.classList.add("active");
         }
     }
 );
 
 
 /* ========================================
-   SMOOTH PAGE SCROLL
+   PRICING BUTTON
+======================================== */
+
+pricingButton.addEventListener(
+    "click",
+    () => {
+
+        smoothScrollTo(pricingSection);
+    }
+);
+
+
+/* ========================================
+   UI FOLDER CARDS
+======================================== */
+
+folderCards.forEach(
+    (card) => {
+
+        card.addEventListener(
+            "click",
+            () => {
+
+                const socials =
+                    document.getElementById("socials");
+
+                if (socials) {
+                    smoothScrollTo(socials);
+                }
+            }
+        );
+    }
+);
+
+
+/* ========================================
+   BOTTOM NAV
+======================================== */
+
+navItems.forEach(
+    (item) => {
+
+        item.addEventListener(
+            "click",
+            () => {
+
+                const target =
+                    document.getElementById(
+                        item.dataset.target
+                    );
+
+                if (!target) {
+                    return;
+                }
+
+                smoothScrollTo(target);
+            }
+        );
+    }
+);
+
+
+/* ========================================
+   SMOOTH PROGRAMMATIC SCROLL
 ======================================== */
 
 let scrollAnimation = null;
 
+
 function smoothScrollTo(element) {
 
-    if (!element) return;
+    if (!element) {
+        return;
+    }
 
-    const start = window.scrollY;
+    const start =
+        window.scrollY;
 
     const target =
         element.getBoundingClientRect().top +
         window.scrollY -
-        30;
+        35;
 
     const distance =
         target - start;
 
-    const duration = Math.min(
-        1200,
-        Math.max(
-            650,
-            Math.abs(distance) * .65
-        )
-    );
+    const duration =
+        Math.min(
+            1200,
+            Math.max(
+                600,
+                Math.abs(distance) * .65
+            )
+        );
 
     const startTime =
         performance.now();
 
     if (scrollAnimation) {
-        cancelAnimationFrame(
-            scrollAnimation
-        );
+        cancelAnimationFrame(scrollAnimation);
     }
 
     function animate(currentTime) {
@@ -552,10 +613,8 @@ function smoothScrollTo(element) {
         const progress =
             Math.min(
                 1,
-                (
-                    currentTime -
-                    startTime
-                ) / duration
+                (currentTime - startTime) /
+                duration
             );
 
         const eased =
@@ -585,51 +644,115 @@ function smoothScrollTo(element) {
     }
 
     scrollAnimation =
-        requestAnimationFrame(
-            animate
-        );
+        requestAnimationFrame(animate);
 }
 
 
 /* ========================================
-   PRICING BUTTON
+   NORMAL PAGE SCROLL MOMENTUM
 ======================================== */
 
-pricingButton.addEventListener(
-    "click",
-    () => {
-        smoothScrollTo(
-            pricingSection
+let pageScrollVelocity = 0;
+let pageScrollAnimation = null;
+let lastWheelTime = 0;
+
+const PAGE_SCROLL_FRICTION = .84;
+const PAGE_SCROLL_MULTIPLIER = .9;
+
+
+function animatePageMomentum() {
+
+    if (Math.abs(pageScrollVelocity) < .3) {
+
+        pageScrollVelocity = 0;
+        pageScrollAnimation = null;
+        return;
+    }
+
+    window.scrollBy(
+        0,
+        pageScrollVelocity
+    );
+
+    pageScrollVelocity *=
+        PAGE_SCROLL_FRICTION;
+
+    pageScrollAnimation =
+        requestAnimationFrame(
+            animatePageMomentum
         );
+}
+
+
+window.addEventListener(
+    "wheel",
+    (event) => {
+
+        if (
+            lightbox.classList.contains("active")
+        ) {
+            return;
+        }
+
+        /*
+            The gallery intentionally ignores
+            wheel input. The page scrolls instead.
+        */
+
+        event.preventDefault();
+
+        if (scrollAnimation) {
+
+            cancelAnimationFrame(
+                scrollAnimation
+            );
+
+            scrollAnimation = null;
+        }
+
+        const now = performance.now();
+
+        const timeSinceLastWheel =
+            now - lastWheelTime;
+
+        const multiplier =
+            timeSinceLastWheel < 80
+                ? 1.0
+                : .72;
+
+        pageScrollVelocity +=
+            event.deltaY *
+            PAGE_SCROLL_MULTIPLIER *
+            multiplier;
+
+        pageScrollVelocity =
+            Math.max(
+                -45,
+                Math.min(
+                    45,
+                    pageScrollVelocity
+                )
+            );
+
+        lastWheelTime = now;
+
+        if (!pageScrollAnimation) {
+
+            pageScrollAnimation =
+                requestAnimationFrame(
+                    animatePageMomentum
+                );
+        }
+
+    },
+    {
+        passive: false
     }
 );
 
 
 /* ========================================
-   NAVIGATION
-======================================== */
-
-navItems.forEach((item) => {
-
-    item.addEventListener(
-        "click",
-        () => {
-
-            const target =
-                document.getElementById(
-                    item.dataset.target
-                );
-
-            if (!target) return;
-
-            smoothScrollTo(target);
-        }
-    );
-});
-
-
-/* ========================================
-   ACTIVE NAV
+   ACTIVE NAVIGATION
 ======================================== */
 
 const sectionObserver =
@@ -639,22 +762,23 @@ const sectionObserver =
             entries.forEach(
                 (entry) => {
 
-                    if (!entry.isIntersecting) {
-                        return;
+                    if (
+                        entry.isIntersecting
+                    ) {
+
+                        const id =
+                            entry.target.dataset.section;
+
+                        navItems.forEach(
+                            (item) => {
+
+                                item.classList.toggle(
+                                    "active",
+                                    item.dataset.target === id
+                                );
+                            }
+                        );
                     }
-
-                    const id =
-                        entry.target.dataset.section;
-
-                    navItems.forEach(
-                        (item) => {
-
-                            item.classList.toggle(
-                                "active",
-                                item.dataset.target === id
-                            );
-                        }
-                    );
                 }
             );
         },
@@ -663,8 +787,10 @@ const sectionObserver =
         }
     );
 
+
 sections.forEach(
     (section) => {
+
         sectionObserver.observe(section);
     }
 );
@@ -675,47 +801,60 @@ sections.forEach(
 ======================================== */
 
 const faqItems =
-    document.querySelectorAll(".faq-item");
-
-faqItems.forEach((item) => {
-
-    item.addEventListener(
-        "toggle",
-        () => {
-
-            if (!item.open) return;
-
-            faqItems.forEach(
-                (other) => {
-
-                    if (other !== item) {
-                        other.removeAttribute(
-                            "open"
-                        );
-                    }
-                }
-            );
-        }
+    document.querySelectorAll(
+        ".faq-item"
     );
-});
+
+faqItems.forEach(
+    (item) => {
+
+        item.addEventListener(
+            "toggle",
+            () => {
+
+                if (!item.open) {
+                    return;
+                }
+
+                faqItems.forEach(
+                    (other) => {
+
+                        if (
+                            other !== item
+                        ) {
+                            other.removeAttribute("open");
+                        }
+                    }
+                );
+            }
+        );
+    }
+);
 
 
 /* ========================================
-   PREVENT IMAGE DRAGGING
+   PREVENT GALLERY IMAGE DRAGGING
 ======================================== */
 
 gallery.addEventListener(
     "dragstart",
     (event) => {
+
         event.preventDefault();
     }
 );
 
 
 /* ========================================
-   INITIALISE
+   INITIAL MEASURE
 ======================================== */
 
 if (document.readyState === "complete") {
     measureGallery();
+} else {
+    window.addEventListener(
+        "load",
+        measureGallery,
+        { once: true }
+    );
 }
