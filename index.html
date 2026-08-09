@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Hzy — Roblox Designer</title>
 
@@ -30,15 +33,11 @@
             </p>
 
             <div class="hero-discord">
-
-                <span>
-                    Discord
-                </span>
+                <span>Discord</span>
 
                 <strong>
                     hzybozo
                 </strong>
-
             </div>
 
         </div>
@@ -46,35 +45,28 @@
     </main>
 
 
-    <!-- PROJECT GALLERY -->
+    <!-- PROJECTS -->
     <section class="gallery-section">
 
         <div class="gallery-header">
 
-            <div>
+            <p class="eyebrow">
+                SELECTED WORK
+            </p>
 
-                <p class="eyebrow">
-                    SELECTED WORK
-                </p>
-
-                <h2>
-                    My Projects
-                </h2>
-
-            </div>
+            <h2>
+                My Projects
+            </h2>
 
         </div>
 
 
         <!--
-            overflow: hidden is intentional.
+            This container intentionally does NOT scroll.
 
-            This prevents the browser from treating
-            the gallery as a horizontally scrollable
-            element.
-
-            Mouse wheel therefore scrolls the actual
-            webpage normally.
+            The JavaScript moves the gallery track
+            itself, which means the mouse wheel remains
+            completely free for normal website scrolling.
         -->
 
         <div
@@ -142,7 +134,7 @@
     </section>
 
 
-    <!-- LIGHTBOXe --> 
+    <!-- LIGHTBOX -->
 
     <div
         class="lightbox"
@@ -152,7 +144,7 @@
         <button
             class="lightbox-close"
             id="lightboxClose"
-            aria-label="Close image"
+            aria-label="Close"
         >
             ×
         </button>
@@ -168,7 +160,9 @@
                 id="lightboxImage"
             >
 
-                <span id="lightboxNumber"></span>
+                <span
+                    id="lightboxNumber"
+                ></span>
 
             </div>
 
