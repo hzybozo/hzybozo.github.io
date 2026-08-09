@@ -4,15 +4,24 @@
     box-sizing: border-box;
 }
 
+
 html {
     scroll-behavior: smooth;
 }
 
+
 body {
     background: #080808;
+
     color: #ffffff;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     min-height: 100vh;
+
     overflow-x: hidden;
 }
 
@@ -25,28 +34,40 @@ body {
     min-height: 100vh;
 
     display: flex;
+
     align-items: center;
 
     padding: 60px;
 }
 
+
 .hero-content {
     width: 100%;
+
     max-width: 1400px;
 
     margin: 0 auto;
 }
 
+
 .eyebrow {
     font-size: 12px;
+
     letter-spacing: 0.18em;
+
     color: #777777;
 
     margin-bottom: 20px;
 }
 
+
 .hero h1 {
-    font-size: clamp(6rem, 16vw, 15rem);
+    font-size:
+        clamp(
+            6rem,
+            16vw,
+            15rem
+        );
 
     line-height: 0.78;
 
@@ -54,6 +75,7 @@ body {
 
     font-weight: 700;
 }
+
 
 .hero-description {
     max-width: 560px;
@@ -77,21 +99,29 @@ body {
 
     align-items: center;
 
-    gap: 12px;
+    gap: 14px;
 
-    margin-top: 30px;
+    margin-top: 32px;
 
-    font-size: 14px;
+    font-size: 18px;
 }
+
 
 .hero-discord span {
     color: #555555;
+
+    font-size: 15px;
 }
+
 
 .hero-discord strong {
     color: #ffffff;
 
-    font-weight: 500;
+    font-size: 26px;
+
+    font-weight: 600;
+
+    letter-spacing: -0.02em;
 }
 
 
@@ -103,16 +133,25 @@ body {
     padding: 120px 0 180px;
 }
 
+
 .gallery-header {
-    width: calc(100% - 120px);
+    width:
+        calc(100% - 120px);
 
     max-width: 1400px;
 
-    margin: 0 auto 50px;
+    margin:
+        0 auto 50px;
 }
 
+
 .gallery-header h2 {
-    font-size: clamp(3rem, 7vw, 7rem);
+    font-size:
+        clamp(
+            3rem,
+            7vw,
+            7rem
+        );
 
     line-height: 0.9;
 
@@ -125,14 +164,22 @@ body {
 ======================================== */
 
 .gallery-wrapper {
+
+    /*
+        IMPORTANT:
+
+        Hidden instead of auto.
+
+        This means the browser cannot use
+        the mouse wheel to scroll the gallery.
+
+        The page itself remains normally
+        scrollable.
+    */
+
     width: 100%;
 
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    scrollbar-width: none;
-
-    -ms-overflow-style: none;
+    overflow: hidden;
 
     cursor: grab;
 
@@ -141,9 +188,6 @@ body {
     touch-action: pan-y;
 }
 
-.gallery-wrapper::-webkit-scrollbar {
-    display: none;
-}
 
 .gallery-wrapper.dragging {
     cursor: grabbing;
@@ -161,18 +205,27 @@ body {
 
     gap: 22px;
 
-    padding: 20px 60px;
+    padding:
+        20px 60px;
 }
 
 
 /* ========================================
-   CARDS
+   PROJECT CARDS
 ======================================== */
 
 .gallery-item {
-    width: min(42vw, 520px);
+    width:
+        min(
+            42vw,
+            520px
+        );
 
-    height: min(58vw, 650px);
+    height:
+        min(
+            58vw,
+            650px
+        );
 
     flex-shrink: 0;
 
@@ -184,33 +237,67 @@ body {
 
     cursor: pointer;
 
-    transform: scale(1);
+    transform:
+        scale(1);
 
     transition:
-        transform 0.45s cubic-bezier(.16, 1, .3, 1),
-        filter 0.45s ease;
+        transform
+        0.45s
+        cubic-bezier(
+            .16,
+            1,
+            .3,
+            1
+        ),
+
+        filter
+        0.45s
+        ease;
 }
+
+
+/* HOVER */
 
 .gallery-item:hover {
-    transform: scale(0.965);
+    transform:
+        scale(0.965);
 
-    filter: brightness(1.08);
+    filter:
+        brightness(1.08);
 }
 
 
-/* CLICK ANIMATION */
+/* ========================================
+   CLICK / PRESS ANIMATION
+======================================== */
 
 .gallery-item.pressing {
-    transform: scale(0.92);
 
-    filter: brightness(0.85);
+    transform:
+        scale(0.90);
+
+    filter:
+        brightness(0.80);
 
     transition:
-        transform 0.12s cubic-bezier(.4, 0, .2, 1);
+        transform
+        0.12s
+        cubic-bezier(
+            .4,
+            0,
+            .2,
+            1
+        ),
+
+        filter
+        0.12s
+        ease;
 }
 
 
-/* CARD SHINE */
+/* ========================================
+   CARD SHINE
+======================================== */
 
 .gallery-item::after {
     content: "";
@@ -224,18 +311,26 @@ body {
     background:
         linear-gradient(
             135deg,
-            rgba(255, 255, 255, 0.18),
+            rgba(
+                255,
+                255,
+                255,
+                0.18
+            ),
             transparent 40%
         );
 }
 
 
-/* NUMBER */
+/* ========================================
+   IMAGE NUMBER
+======================================== */
 
 .image-number {
     position: absolute;
 
     top: 24px;
+
     left: 24px;
 
     z-index: 2;
@@ -308,6 +403,7 @@ body {
 ======================================== */
 
 .lightbox {
+
     position: fixed;
 
     inset: 0;
@@ -322,34 +418,60 @@ body {
 
     padding: 40px;
 
-    background: rgba(0, 0, 0, 0.78);
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.78
+        );
 
-    backdrop-filter: blur(25px);
+    backdrop-filter:
+        blur(25px);
 
-    -webkit-backdrop-filter: blur(25px);
+    -webkit-backdrop-filter:
+        blur(25px);
 
     opacity: 0;
 
     visibility: hidden;
 
     transition:
-        opacity 0.4s ease,
-        visibility 0.4s ease;
+        opacity
+        0.4s
+        ease,
+
+        visibility
+        0.4s
+        ease;
 }
 
+
 .lightbox.active {
+
     opacity: 1;
 
     visibility: visible;
 }
 
 
-/* LARGE IMAGE */
+/* ========================================
+   LARGE IMAGE
+======================================== */
 
 .lightbox-content {
-    width: min(85vw, 1000px);
 
-    height: min(80vh, 750px);
+    width:
+        min(
+            85vw,
+            1000px
+        );
+
+    height:
+        min(
+            80vh,
+            750px
+        );
 
     display: flex;
 
@@ -357,22 +479,39 @@ body {
 
     justify-content: center;
 
-    transform: scale(0.75);
+    transform:
+        scale(0.72);
 
     opacity: 0;
 
     transition:
-        transform 0.6s cubic-bezier(.16, 1, .3, 1),
-        opacity 0.35s ease;
+        transform
+        0.6s
+        cubic-bezier(
+            .16,
+            1,
+            .3,
+            1
+        ),
+
+        opacity
+        0.35s
+        ease;
 }
 
-.lightbox.active .lightbox-content {
-    transform: scale(1);
+
+.lightbox.active
+.lightbox-content {
+
+    transform:
+        scale(1);
 
     opacity: 1;
 }
 
+
 .lightbox-image {
+
     width: 100%;
 
     height: 100%;
@@ -390,10 +529,18 @@ body {
     border-radius: 5px;
 
     box-shadow:
-        0 40px 120px rgba(0, 0, 0, 0.55);
+        0 40px 120px
+        rgba(
+            0,
+            0,
+            0,
+            0.55
+        );
 }
 
+
 #lightboxNumber {
+
     color: white;
 
     font-size: 16px;
@@ -409,21 +556,30 @@ body {
 ======================================== */
 
 .lightbox-close {
+
     position: absolute;
 
     top: 25px;
+
     right: 30px;
 
     z-index: 10;
 
     width: 55px;
+
     height: 55px;
 
     border: 0;
 
     border-radius: 50%;
 
-    background: rgba(255, 255, 255, 0.1);
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.1
+        );
 
     color: white;
 
@@ -434,18 +590,37 @@ body {
     cursor: pointer;
 
     transition:
-        transform 0.3s ease,
-        background 0.3s ease;
+        transform
+        0.3s
+        ease,
+
+        background
+        0.3s
+        ease;
 }
+
 
 .lightbox-close:hover {
-    transform: rotate(90deg) scale(1.1);
 
-    background: rgba(255, 255, 255, 0.2);
+    transform:
+        rotate(90deg)
+        scale(1.1);
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.2
+        );
 }
 
+
 .lightbox-close:active {
-    transform: rotate(90deg) scale(0.9);
+
+    transform:
+        rotate(90deg)
+        scale(0.9);
 }
 
 
@@ -459,9 +634,11 @@ body {
         padding: 30px;
     }
 
+
     .hero h1 {
         font-size: 22vw;
     }
+
 
     .hero-description {
         margin-top: 30px;
@@ -469,49 +646,74 @@ body {
         font-size: 16px;
     }
 
+
     .hero-discord {
         margin-top: 25px;
+
+        gap: 10px;
     }
+
+
+    .hero-discord strong {
+        font-size: 22px;
+    }
+
 
     .gallery-section {
-        padding: 80px 0 100px;
+        padding:
+            80px 0
+            100px;
     }
 
+
     .gallery-header {
-        width: calc(100% - 60px);
+
+        width:
+            calc(100% - 60px);
 
         margin-bottom: 30px;
     }
+
 
     .gallery-header h2 {
         font-size: 16vw;
     }
 
+
     .gallery {
         gap: 15px;
 
-        padding: 15px 30px;
+        padding:
+            15px 30px;
     }
 
+
     .gallery-item {
+
         width: 72vw;
 
         height: 100vw;
     }
 
+
     .lightbox {
         padding: 20px;
     }
 
+
     .lightbox-content {
+
         width: 90vw;
 
         height: 75vh;
     }
 
+
     .lightbox-close {
+
         top: 15px;
 
         right: 15px;
     }
+
 }
