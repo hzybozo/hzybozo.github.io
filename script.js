@@ -106,7 +106,11 @@ tiltElements.forEach((element) => {
         currentY: 0,
         targetX: 0,
         targetY: 0,
-        hovering: false
+        hovering: false,
+        pointerX: 0,
+        pointerY: 0,
+        hasPointer: false,
+        lastTransform: ""
     });
 
     element.addEventListener("pointermove", (event) => {
@@ -124,23 +128,9 @@ tiltElements.forEach((element) => {
             return;
         }
 
-        const rect =
-            element.getBoundingClientRect();
-
-        const x =
-            (event.clientX - rect.left) /
-            rect.width;
-
-        const y =
-            (event.clientY - rect.top) /
-            rect.height;
-
-        state.targetY =
-            (x - 0.5) * 14;
-
-        state.targetX =
-            (y - 0.5) * -14;
-
+        state.pointerX = event.clientX;
+        state.pointerY = event.clientY;
+        state.hasPointer = true;
         state.hovering = true;
 
         startTiltLoop(element);
@@ -172,6 +162,7 @@ tiltElements.forEach((element) => {
         state.targetX = 0;
         state.targetY = 0;
         state.hovering = false;
+        state.hasPointer = false;
 
         startTiltLoop(element);
 
@@ -211,6 +202,37 @@ function smoothTiltLoop() {
         }
 
         /*
+            Read the rect once per frame (not per pointer
+            event) so the hovered element can scroll/move
+            without forcing a synchronous layout each move.
+        */
+
+        if (state.hasPointer) {
+
+            const rect =
+                element.getBoundingClientRect();
+
+            if (rect.width > 0 && rect.height > 0) {
+
+                const x =
+                    (state.pointerX - rect.left) /
+                    rect.width;
+
+                const y =
+                    (state.pointerY - rect.top) /
+                    rect.height;
+
+                state.targetY =
+                    (x - 0.5) * 14;
+
+                state.targetX =
+                    (y - 0.5) * -14;
+
+            }
+
+        }
+
+        /*
             Smooth interpolation.
 
             This is deliberately low so the tilt
@@ -232,8 +254,15 @@ function smoothTiltLoop() {
 
             state.currentX = 0;
             state.currentY = 0;
+            state.hasPointer = false;
 
-            element.style.transform = "";
+            if (state.lastTransform) {
+
+                element.style.transform = "";
+
+                state.lastTransform = "";
+
+            }
 
             settled.push(element);
 
@@ -241,11 +270,19 @@ function smoothTiltLoop() {
 
         }
 
-        element.style.transform =
+        const transform =
             `perspective(600px)
              rotateX(${state.currentX}deg)
              rotateY(${state.currentY}deg)
              translateY(${state.hovering ? -6 : 0}px)`;
+
+        if (transform !== state.lastTransform) {
+
+            element.style.transform = transform;
+
+            state.lastTransform = transform;
+
+        }
 
     });
 
