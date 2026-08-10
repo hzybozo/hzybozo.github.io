@@ -136,10 +136,10 @@ tiltElements.forEach((element) => {
             rect.height;
 
         state.targetY =
-            (x - 0.5) * 7;
+            (x - 0.5) * 14;
 
         state.targetX =
-            (y - 0.5) * -7;
+            (y - 0.5) * -14;
 
         state.hovering = true;
 
@@ -242,10 +242,10 @@ function smoothTiltLoop() {
         }
 
         element.style.transform =
-            `perspective(900px)
+            `perspective(600px)
              rotateX(${state.currentX}deg)
              rotateY(${state.currentY}deg)
-             translateY(${state.hovering ? -4 : 0}px)`;
+             translateY(${state.hovering ? -6 : 0}px)`;
 
     });
 
@@ -1064,9 +1064,7 @@ function smoothScrollTo(element) {
         window.scrollY;
 
     const target =
-        element.getBoundingClientRect().top +
-        window.scrollY -
-        65;
+        element.offsetTop;
 
     const distance =
         target - start;
