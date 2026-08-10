@@ -345,6 +345,10 @@ p {
     cursor: pointer;
     transform-style: preserve-3d;
     will-change: transform;
+    background-color: #10121b;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     transition:
         border-color .3s ease,
         box-shadow .3s ease;
@@ -367,18 +371,12 @@ p {
     );
 }
 
-.colour-1 { background: linear-gradient(135deg,#5b21b6,#38bdf8); }
-.colour-2 { background: linear-gradient(135deg,#ef4444,#f59e0b); }
-.colour-3 { background: linear-gradient(135deg,#22c55e,#14b8a6); }
-.colour-4 { background: linear-gradient(135deg,#ec4899,#8b5cf6); }
-.colour-5 { background: linear-gradient(135deg,#f97316,#eab308); }
-.colour-6 { background: linear-gradient(135deg,#06b6d4,#3b82f6); }
-.colour-7 { background: linear-gradient(135deg,#84cc16,#10b981); }
-.colour-8 { background: linear-gradient(135deg,#f43f5e,#9333ea); }
-.colour-9 { background: linear-gradient(135deg,#0ea5e9,#6366f1); }
-.colour-10 { background: linear-gradient(135deg,#e11d48,#fb7185); }
-.colour-11 { background: linear-gradient(135deg,#14b8a6,#22c55e); }
-.colour-12 { background: linear-gradient(135deg,#7c3aed,#2563eb); }
+.work-1 { background-image: url('images/work1.png'); }
+.work-2 { background-image: url('images/work2.png'); }
+.work-3 { background-image: url('images/work3.png'); }
+.work-4 { background-image: url('images/work4.png'); }
+.work-5 { background-image: url('images/work5.png'); }
+.work-6 { background-image: url('images/work6.png'); }
 
 .gallery-item.pressing {
     transform: scale(.94) !important;
