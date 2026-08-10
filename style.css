@@ -344,11 +344,20 @@ p {
     box-shadow: 0 25px 65px rgba(0,0,0,.32);
     cursor: pointer;
     transform-style: preserve-3d;
-    will-change: transform;
     background-color: #10121b;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    /*
+        Skip paint/layout work for frames currently
+        outside the viewport. The gallery is duplicated
+        for infinite scroll, so at any moment roughly
+        half the 24 frames are off-screen - this avoids
+        paying their (heavy, blurred) box-shadow cost
+        every frame while nothing changes visually for
+        the frames actually on screen.
+    */
+    content-visibility: auto;
     transition:
         border-color .3s ease,
         box-shadow .3s ease;
@@ -442,6 +451,18 @@ p {
 .tool-card,
 .social-card {
     transform-style: preserve-3d;
+}
+
+/*
+    will-change is applied only while an element is
+    actively being tilted/interacted with (toggled in
+    script.js). Keeping it on permanently for every
+    card/frame forces the browser to hold many GPU
+    layers alive at once, which is costly for no
+    visual benefit.
+*/
+
+.tilting {
     will-change: transform;
 }
 
