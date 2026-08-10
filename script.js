@@ -35,14 +35,19 @@ let mouseY = window.innerHeight / 2;
 let cursorX = mouseX;
 let cursorY = mouseY;
 
-document.addEventListener("pointermove", (event) => {
+document.addEventListener(
+    "pointermove",
+    (event) => {
 
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+        mouseX = event.clientX;
+        mouseY = event.clientY;
 
-});
+    },
+    { passive: true }
+);
 
-function cursorLoop() {
+
+function updateCursor() {
 
     cursorX += (mouseX - cursorX) * 0.075;
     cursorY += (mouseY - cursorY) * 0.075;
@@ -53,45 +58,32 @@ function cursorLoop() {
     cursorGlow.style.transform =
         `translate3d(${cursorX - 180}px, ${cursorY - 180}px, 0)`;
 
-    requestAnimationFrame(cursorLoop);
 }
-
-cursorLoop();
-
-
-/* ========================================
-   BACKGROUND CURSOR REACTION
-======================================== */
-
-let backgroundX = 0;
-let backgroundY = 0;
-
-function backgroundLoop() {
-
-    backgroundX +=
-        ((mouseX / window.innerWidth) * 30 - backgroundX) * .035;
-
-    backgroundY +=
-        ((mouseY / window.innerHeight) * 30 - backgroundY) * .035;
-
-    document.documentElement.style.setProperty(
-        "--mouse-x",
-        `${backgroundX}px`
-    );
-
-    document.documentElement.style.setProperty(
-        "--mouse-y",
-        `${backgroundY}px`
-    );
-
-    requestAnimationFrame(backgroundLoop);
-}
-
-backgroundLoop();
 
 
 /* ========================================
    SMOOTH 3D TILT
+
+   Notes on the perf changes here:
+
+   - getBoundingClientRect() is a forced layout read.
+     The original code called it on every single raw
+     pointermove event, for every tilt element on the
+     page (including all 24 gallery frames). That's
+     what made things like dragging across the gallery
+     feel heavy - lots of layout thrashing on the main
+     thread.
+
+   - Now, the rect is only measured once per hover
+     (cached on pointerenter) and the actual tilt target
+     is only recalculated once per animation frame inside
+     updateTilt(), no matter how many pointermove events
+     fired in between. The visual result (a smooth tilt
+     that follows the cursor) is identical.
+
+   - will-change is now toggled on only while an element
+     is actively hovered, instead of being permanently set
+     on every card/frame in CSS.
 ======================================== */
 
 const tiltElements = document.querySelectorAll(
@@ -102,80 +94,140 @@ const tiltStates = new Map();
 
 tiltElements.forEach((element) => {
 
-    tiltStates.set(element, {
+    const state = {
         currentX: 0,
         currentY: 0,
         targetX: 0,
         targetY: 0,
-        hovering: false
-    });
+        hovering: false,
+        rect: null,
+        pendingEvent: null
+    };
 
-    element.addEventListener("pointermove", (event) => {
+    tiltStates.set(element, state);
 
-        if (
-            event.target.closest("button") ||
-            event.target.closest("a")
-        ) {
-            return;
-        }
+    element.addEventListener(
+        "pointerenter",
+        () => {
 
-        const state = tiltStates.get(element);
-
-        if (!state) {
-            return;
-        }
-
-        const rect =
-            element.getBoundingClientRect();
-
-        const x =
-            (event.clientX - rect.left) /
-            rect.width;
-
-        const y =
-            (event.clientY - rect.top) /
-            rect.height;
-
-        state.targetY =
-            (x - 0.5) * 7;
-
-        state.targetX =
-            (y - 0.5) * -7;
-
-        state.hovering = true;
-
-    });
-
-    element.addEventListener("pointerenter", () => {
-
-        const state = tiltStates.get(element);
-
-        if (state) {
             state.hovering = true;
-        }
+            state.rect = element.getBoundingClientRect();
 
-    });
+            element.classList.add("tilting");
 
-    element.addEventListener("pointerleave", () => {
+        },
+        { passive: true }
+    );
 
-        const state = tiltStates.get(element);
+    element.addEventListener(
+        "pointermove",
+        (event) => {
 
-        if (!state) {
-            return;
-        }
+            if (
+                event.target.closest("button") ||
+                event.target.closest("a")
+            ) {
+                return;
+            }
 
-        state.targetX = 0;
-        state.targetY = 0;
-        state.hovering = false;
+            /*
+                Just store the event - the actual math
+                happens at most once per frame, inside
+                updateTilt().
+            */
 
-    });
+            state.pendingEvent = event;
+
+        },
+        { passive: true }
+    );
+
+    element.addEventListener(
+        "pointerleave",
+        () => {
+
+            state.targetX = 0;
+            state.targetY = 0;
+            state.hovering = false;
+            state.rect = null;
+            state.pendingEvent = null;
+
+            element.classList.remove("tilting");
+
+        },
+        { passive: true }
+    );
 
 });
 
 
-function smoothTiltLoop() {
+/*
+    Cached rects go stale if the page scrolls or the
+    window resizes, so drop them and let them be
+    re-measured lazily on the next frame that needs one.
+*/
+
+function invalidateTiltRects() {
+
+    tiltStates.forEach((state) => {
+
+        if (state.hovering) {
+            state.rect = null;
+        }
+
+    });
+
+}
+
+
+window.addEventListener(
+    "resize",
+    invalidateTiltRects
+);
+
+window.addEventListener(
+    "scroll",
+    invalidateTiltRects,
+    { passive: true }
+);
+
+
+function updateTilt() {
 
     tiltStates.forEach((state, element) => {
+
+        if (
+            state.hovering &&
+            state.pendingEvent
+        ) {
+
+            if (!state.rect) {
+
+                state.rect =
+                    element.getBoundingClientRect();
+
+            }
+
+            const rect = state.rect;
+            const event = state.pendingEvent;
+
+            const x =
+                (event.clientX - rect.left) /
+                rect.width;
+
+            const y =
+                (event.clientY - rect.top) /
+                rect.height;
+
+            state.targetY =
+                (x - 0.5) * 7;
+
+            state.targetX =
+                (y - 0.5) * -7;
+
+            state.pendingEvent = null;
+
+        }
 
         /*
             Smooth interpolation.
@@ -213,10 +265,7 @@ function smoothTiltLoop() {
 
     });
 
-    requestAnimationFrame(smoothTiltLoop);
 }
-
-smoothTiltLoop();
 
 
 /* ========================================
@@ -285,17 +334,22 @@ function normalizeGallery() {
         return;
     }
 
-    while (
-        galleryPosition <= -gallerySetWidth
-    ) {
-        galleryPosition += gallerySetWidth;
+    /*
+        Equivalent to the original pair of while loops,
+        but done with a single modulo operation instead
+        of iterating - keeps galleryPosition in the same
+        (-gallerySetWidth, 0] range without looping,
+        which matters under large momentum values.
+    */
+
+    let wrapped =
+        galleryPosition % gallerySetWidth;
+
+    if (wrapped > 0) {
+        wrapped -= gallerySetWidth;
     }
 
-    while (
-        galleryPosition > 0
-    ) {
-        galleryPosition -= gallerySetWidth;
-    }
+    galleryPosition = wrapped;
 
 }
 
@@ -323,7 +377,7 @@ window.addEventListener(
    GALLERY ANIMATION
 ======================================== */
 
-function galleryLoop(currentTime) {
+function updateGallery(currentTime) {
 
     const delta =
         Math.min(
@@ -367,10 +421,7 @@ function galleryLoop(currentTime) {
     normalizeGallery();
     renderGallery();
 
-    requestAnimationFrame(galleryLoop);
 }
-
-requestAnimationFrame(galleryLoop);
 
 
 /* ========================================
@@ -911,7 +962,8 @@ lightboxImage.addEventListener(
         lightboxImage.style.backgroundRepeat =
             "no-repeat";
 
-    }
+    },
+    { passive: true }
 );
 
 
@@ -926,7 +978,8 @@ lightboxImage.addEventListener(
         lightboxImage.style.backgroundPosition =
             "center";
 
-    }
+    },
+    { passive: true }
 );
 
 
@@ -1291,6 +1344,36 @@ gallery.addEventListener(
 
     }
 );
+
+
+/* ========================================
+   MAIN LOOP
+
+   Cursor, tilt and gallery updates used to run as
+   four separate requestAnimationFrame loops (cursor,
+   background-reactive-grid, tilt, gallery). One of
+   those (background) did nothing visible at all - it
+   set CSS custom properties that no rule in style.css
+   actually reads, which forces a style recalculation
+   for the whole document every frame for zero visual
+   benefit, and has been removed entirely.
+
+   The remaining three are now combined into a single
+   loop for less scheduling overhead and more
+   predictable frame timing.
+======================================== */
+
+function mainLoop(currentTime) {
+
+    updateCursor();
+    updateTilt();
+    updateGallery(currentTime);
+
+    requestAnimationFrame(mainLoop);
+
+}
+
+requestAnimationFrame(mainLoop);
 
 
 /* ========================================
