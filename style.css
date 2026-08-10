@@ -411,7 +411,6 @@ p {
     color: white;
     background: rgba(5,7,12,.55);
     border: 1px solid rgba(255,255,255,.18);
-    backdrop-filter: blur(15px);
     opacity: 0;
     transform: translateY(8px);
     transition:
@@ -423,6 +422,7 @@ p {
 .gallery-item:hover .zoom-trigger {
     opacity: 1;
     transform: translateY(0);
+    backdrop-filter: blur(15px);
 }
 
 .zoom-trigger:hover {
